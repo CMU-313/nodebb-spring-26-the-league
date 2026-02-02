@@ -50,6 +50,11 @@ module.exports = function (Messaging) {
 				throw new Error('[[error:no-privileges]]');
 			}
 		}
+		if (data.forwardMid) {
+			if (!await Messaging.messageExists(data.forwardMid)) {
+				throw new Error('[[error:invalid-mid]]');
+			}
+		}
 		const mid = data.mid || await db.incrObjectField('global', 'nextMid');
 		const timestamp = data.timestamp || Date.now();
 		let message = {
@@ -61,6 +66,9 @@ module.exports = function (Messaging) {
 		};
 		if (data.toMid) {
 			message.toMid = data.toMid;
+		}
+		if (data.forwardMid) {
+			message.forwardMid = data.forwardMid;
 		}
 		if (data.system) {
 			message.system = data.system;
