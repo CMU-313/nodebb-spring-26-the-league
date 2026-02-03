@@ -118,6 +118,10 @@ MessageObject:
       type: number
     newSet:
       type: boolean
+    forwardMid:
+      type: number
+    forwardedMessage:
+      $ref: '#/MessageObject'
 RoomUserList:
   type: object
   properties:
