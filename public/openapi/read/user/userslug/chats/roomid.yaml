@@ -136,6 +136,12 @@ get:
                           type: number
                         isOwner:
                           type: boolean
+                        forwardMid:
+                          type: number
+                          description: The message ID of the forwarded message, if this message is a forward
+                        forwardedMessage:
+                          type: object
+                          description: The full message object of the forwarded message, populated when forwardMid is present
                   isOwner:
                     type: boolean
                   users:
