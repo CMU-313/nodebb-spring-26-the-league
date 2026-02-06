@@ -26,6 +26,7 @@
 			<div class="btn-group border shadow-sm controls position-absolute bg-body end-0" style="bottom:1rem;">
 				<!-- IMPORT partials/chats/add-reaction.tpl -->
 				<button class="btn btn-sm btn-link" data-action="reply" title="[[topic:reply]]"><i class="fa fa-reply"></i></button>
+        <button class="btn btn-sm btn-link" data-action="forward" title="[[topic:forward]"><i class="fa fa-share"></i></button>
 
 				<div class="btn-group d-inline-block">
 					<button class="btn btn-sm btn-link dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-ellipsis" type="button"></i></button>
@@ -81,27 +82,27 @@
 					<i class="fa fa-times"></i>
 				</button>
 			</div>
-			
+
 			<div class="forward-search-container">
-				<input type="text" 
-					class="form-control form-control-sm forward-search-input" 
+				<input type="text"
+					class="form-control form-control-sm forward-search-input"
 					placeholder="Search chats..."
 					autocomplete="off">
 			</div>
-			
+
 			<div class="forward-recipients-list">
 				<div class="forward-loading text-center py-3">
 					<i class="fa fa-spinner fa-spin"></i> Loading chats...
 				</div>
-				
+
 				<div class="forward-no-results text-center py-3">
 					<p class="text-muted mb-0">No chats found</p>
 				</div>
-				
+
 				<div class="forward-recipients-container">
 				</div>
 			</div>
-			
+
 			<div class="forward-dropdown-footer">
 				<small class="text-muted">Click a chat to forward</small>
 			</div>
