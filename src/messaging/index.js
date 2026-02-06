@@ -62,7 +62,6 @@ Messaging.getMessages = async (params) => {
 	messageData.forEach((msg) => {
 		msg.index = indices[msg.messageId.toString()];
 	});
-	// console.log(messageData);
 	return messageData;
 };
 

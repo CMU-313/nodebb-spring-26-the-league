@@ -30,8 +30,6 @@ define('forum/chats/messages', [
 		// class="text-sm px-2 mb-1 d-flex gap-2 align-items-center" data-forwardmid="8">
 		const forwardFromEl = chatComposer.find('[component="chat/composer/forwarded-from"]');
 		const forwardMid = forwardFromEl.attr('data-forwardmid');
-		// console.log(toMid); // toMid can be used to speculate mid
-		console.log(forwardMid); // fromMid can be used to speculate mid
 
 		api.post(`/chats/${roomId}`, { message, toMid: toMid, forwardMid: forwardMid}).then(() => {
 			hooks.fire('action:chat.sent', { roomId, message });
