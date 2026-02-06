@@ -388,5 +388,279 @@ define('forum/chats/messages', [
 		}).catch(alerts.error);
 	};
 
+	/**
+	 * Initialize forward message dropdown
+	 */
+	messages.initForwardDropdown = function () {
+		console.log('Initializing forward message dropdown handlers');
+		$(document).off('click.forward').on('click.forward', '[component="chat/message/reply"]', function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			const msgEl = $(this).closest('[component="chat/message"]');
+			const mid = msgEl.attr('data-mid');
+			const roomId = msgEl.closest('[component="chat/messages"]').attr('data-roomid');
+			
+			// Close any other open dropdowns
+			$('.forward-dropdown').removeClass('show');
+			
+			// Toggle this dropdown
+			const dropdown = msgEl.find('.forward-dropdown');
+			if (dropdown.hasClass('show')) {
+				dropdown.removeClass('show');
+			} else {
+				messages.showForwardDropdown(mid, roomId, msgEl);
+			}
+		});
+
+		// Close dropdown when clicking outside
+		$(document).off('click.forward-outside').on('click.forward-outside', function (e) {
+			if (!$(e.target).closest('.forward-dropdown, [component="chat/message/reply"]').length) {
+				$('.forward-dropdown').removeClass('show');
+			}
+		});
+
+		// Close button handler
+		$(document).off('click.forward-close').on('click.forward-close', '.close-forward-dropdown', function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			$(this).closest('.forward-dropdown').removeClass('show');
+		});
+
+		// Show dropdown on message hover (with small delay to avoid flicker)
+		$(document).off('mouseenter.forward mouseleave.forward', '[component="chat/message"]').on('mouseenter.forward', '[component="chat/message"]', function () {
+			const msgEl = $(this);
+			// Clear any pending hide timer
+			clearTimeout(msgEl.data('forwardHideTimer'));
+			// If already shown, nothing to do
+			const dropdown = msgEl.find('.forward-dropdown');
+			if (dropdown.hasClass('show')) {
+				return;
+			}
+			// Set a short timer to open dropdown (prevents accidental triggers)
+			const openTimer = setTimeout(() => {
+				const mid = msgEl.attr('data-mid');
+				const roomId = msgEl.closest('[component="chat/messages"]').attr('data-roomid');
+				messages.showForwardDropdown(mid, roomId, msgEl);
+			}, 250);
+			msgEl.data('forwardOpenTimer', openTimer);
+		}).on('mouseleave.forward', '[component="chat/message"]', function () {
+			const msgEl = $(this);
+			// Cancel open timer if still pending
+			clearTimeout(msgEl.data('forwardOpenTimer'));
+			// Start hide timer so user can move into dropdown
+			const dropdown = msgEl.find('.forward-dropdown');
+			const hideTimer = setTimeout(() => {
+				dropdown.removeClass('show');
+			}, 300);
+			msgEl.data('forwardHideTimer', hideTimer);
+		});
+
+		// Keep dropdown open if hovered, hide when leaving dropdown
+		$(document).off('mouseenter.forwardDropdown mouseleave.forwardDropdown', '.forward-dropdown').on('mouseenter.forwardDropdown', '.forward-dropdown', function () {
+			const dropdown = $(this);
+			clearTimeout(dropdown.data('forwardHideTimer'));
+		}).on('mouseleave.forwardDropdown', '.forward-dropdown', function () {
+			const dropdown = $(this);
+			// hide shortly after leaving dropdown
+			const hideTimer = setTimeout(() => dropdown.removeClass('show'), 200);
+			dropdown.data('forwardHideTimer', hideTimer);
+		});
+	};
+
+	/**
+	 * Show forward dropdown and load available chats
+	 */
+	messages.showForwardDropdown = async function (mid, currentRoomId, msgEl) {
+		const dropdown = msgEl.find('.forward-dropdown');
+		dropdown.addClass('show');
+		
+		// Show loading state
+		dropdown.find('.forward-loading').show();
+		dropdown.find('.forward-recipients-container').empty();
+		dropdown.find('.forward-no-results').hide();
+
+		try {
+			// Fetch available rooms (excluding current room)
+			const rooms = await messages.fetchAvailableRooms(currentRoomId);
+			
+			dropdown.find('.forward-loading').hide();
+			
+			if (rooms.length === 0) {
+				dropdown.find('.forward-no-results').show();
+				return;
+			}
+
+			// Render rooms
+			messages.renderForwardRecipients(dropdown, rooms, mid, currentRoomId);
+			
+		} catch (err) {
+			dropdown.find('.forward-loading').hide();
+			alerts.error('Failed to load chats');
+			console.error(err);
+		}
+	};
+
+	/**
+	 * Fetch available rooms for forwarding
+	 */
+	messages.fetchAvailableRooms = async function (currentRoomId) {
+		try {
+			// Fetch rooms from API
+			const data = await api.get('/chats', { start: 0 });
+			
+			if (!data || !data.rooms) {
+				console.warn('No rooms returned from API');
+				return [];
+			}
+
+			// Filter out current room and map to our format
+			const recentRooms = data.rooms
+				.filter(room => parseInt(room.roomId, 10) !== parseInt(currentRoomId, 10))
+				.map(room => ({
+					roomId: room.roomId,
+					roomName: room.roomName || room.usernames,
+					teaser: room.teaser ? room.teaser.content : '',
+					avatar: room.teaser ? room.teaser.user.picture : null,
+				}));
+
+			// Also try to get public rooms if they exist
+			let publicRooms = [];
+			if (ajaxify.data.publicRooms && Array.isArray(ajaxify.data.publicRooms)) {
+				publicRooms = ajaxify.data.publicRooms
+					.filter(room => parseInt(room.roomId, 10) !== parseInt(currentRoomId, 10))
+					.map(room => ({
+						roomId: room.roomId,
+						roomName: room.roomName,
+						isPublic: true,
+						icon: room.icon || 'fa fa-comments',
+					}));
+			}
+
+			const allRooms = [...recentRooms, ...publicRooms];
+			console.log('Fetched rooms for forwarding:', allRooms);
+			return allRooms;
+
+		} catch (err) {
+			console.error('Error fetching rooms:', err);
+		}
+	};
+
+
+	/**
+	 * Render recipient list in dropdown
+	 */
+	messages.renderForwardRecipients = function (dropdown, rooms, mid, currentRoomId) {
+		const container = dropdown.find('.forward-recipients-container');
+		container.empty();
+
+		rooms.forEach(function (room) {
+			const recipientHtml = `
+				<div class="forward-recipient-item" data-roomid="${room.roomId}" data-mid="${mid}">
+					<div class="forward-recipient-avatar">
+						${room.avatar ? 
+								`<img src="${room.avatar}" alt="${room.roomName}">` : 
+								`<i class="${room.icon || 'fa fa-user'}"></i>`
+						}
+					</div>
+					<div class="forward-recipient-info">
+						<span class="forward-recipient-name">${room.roomName}</span>
+						${room.teaser ? `<span class="forward-recipient-status">${room.teaser}</span>` : ''}
+						${room.isPublic ? '<span class="forward-recipient-status"><i class="fa fa-globe"></i> Public</span>' : ''}
+					</div>
+				</div>
+			`;
+			container.append(recipientHtml);
+		});
+
+		// Add click handlers for recipients
+		container.find('.forward-recipient-item').off('click').on('click', function () {
+			const recipientEl = $(this);
+			const targetRoomId = recipientEl.attr('data-roomid');
+			const messageId = recipientEl.attr('data-mid');
+			
+			messages.forwardMessage(messageId, currentRoomId, targetRoomId);
+			dropdown.removeClass('show');
+		});
+
+		// Add search functionality
+		messages.initForwardSearch(dropdown, rooms, mid, currentRoomId);
+	};
+
+	/**
+	 * Initialize search functionality in forward dropdown
+	 */
+	messages.initForwardSearch = function (dropdown, rooms, mid, currentRoomId) {
+		const searchInput = dropdown.find('.forward-search-input');
+		
+		searchInput.off('input').on('input', function () {
+			const query = $(this).val().toLowerCase().trim();
+			
+			if (!query) {
+				// Show all rooms
+				messages.renderForwardRecipients(dropdown, rooms, mid, currentRoomId);
+				return;
+			}
+
+			// Filter rooms
+			const filteredRooms = rooms.filter(function (room) {
+				return room.roomName.toLowerCase().includes(query);
+			});
+
+			if (filteredRooms.length === 0) {
+				dropdown.find('.forward-recipients-container').empty();
+				dropdown.find('.forward-no-results').show();
+			} else {
+				dropdown.find('.forward-no-results').hide();
+				messages.renderForwardRecipients(dropdown, filteredRooms, mid, currentRoomId);
+			}
+		});
+	};
+
+	/**
+	 * Forward message to another room
+	 * Note: This is a placeholder - backend implementation will be needed
+	 */
+	messages.forwardMessage = async function (messageId, fromRoomId, toRoomId) {
+		try {
+			// Show loading indicator
+			alerts.alert({
+				alert_id: 'forwarding_message',
+				title: '[[modules:chat.forwarding]]',
+				message: '[[modules:chat.forwarding-message]]',
+				type: 'info',
+				timeout: 2000,
+			});
+
+			// TODO: Replace with actual API call when backend is ready
+			// For now, just show success message
+			// const response = await api.post(`/chats/${fromRoomId}/messages/${messageId}/forward`, {
+			//     toRoomId: toRoomId
+			// });
+
+			// Simulated success (remove this when backend is ready)
+			setTimeout(function () {
+				alerts.alert({
+					alert_id: 'message_forwarded',
+					title: '[[global:alert.success]]',
+					message: '[[modules:chat.message-forwarded]]',
+					type: 'success',
+					timeout: 3000,
+				});
+			}, 500);
+
+			hooks.fire('action:chat.forwarded', {
+				messageId: messageId,
+				fromRoomId: fromRoomId,
+				toRoomId: toRoomId,
+			});
+
+		} catch (err) {
+			alerts.error(err);
+			console.error('Forward error:', err);
+		}
+	};
+
 	return messages;
 });
+
+
