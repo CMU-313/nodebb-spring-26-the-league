@@ -24,8 +24,16 @@ define('forum/chats/messages', [
 		({ roomId, message } = await hooks.fire('filter:chat.send', payload));
 		const replyToEl = chatComposer.find('[component="chat/composer/replying-to"]');
 		const toMid = replyToEl.attr('data-tomid');
+		// Maybe useful?
+		// In the front end, there should be an element like this when forwarding a message:
+		// <div component="chat/composer/forwarded-from" 
+		// class="text-sm px-2 mb-1 d-flex gap-2 align-items-center" data-forwardmid="8">
+		const forwardFromEl = chatComposer.find('[component="chat/composer/forwarded-from"]');
+		const forwardMid = forwardFromEl.attr('data-forwardmid');
+		// console.log(toMid); // toMid can be used to speculate mid
+		console.log(forwardMid); // fromMid can be used to speculate mid
 
-		api.post(`/chats/${roomId}`, { message, toMid: toMid }).then(() => {
+		api.post(`/chats/${roomId}`, { message, toMid: toMid, forwardMid: forwardMid}).then(() => {
 			hooks.fire('action:chat.sent', { roomId, message });
 			replyToEl.addClass('hidden');
 			replyToEl.attr('data-tomid', '');

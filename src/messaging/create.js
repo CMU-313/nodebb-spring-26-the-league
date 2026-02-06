@@ -78,7 +78,9 @@ module.exports = function (Messaging) {
 			message.ip = data.ip;
 		}
 
+		// TODO: Find what this does to the message object
 		message = await plugins.hooks.fire('filter:messaging.save', message);
+		// console.log('Final message object to be saved:', message);
 		await db.setObject(`message:${mid}`, message);
 		const isNewSet = await Messaging.isNewSet(uid, roomId, timestamp);
 
