@@ -51,9 +51,10 @@ chatsAPI.list = async (caller, { uid = caller.uid, start, stop, page, perPage } 
 };
 
 chatsAPI.create = async function (caller, data) {
-	if (await rateLimitExceeded(caller, 'lastChatRoomCreateTime')) {
-		throw new Error('[[error:too-many-messages]]');
-	}
+	// Also get rid of this annoying error here!
+	// if (await rateLimitExceeded(caller, 'lastChatRoomCreateTime')) {
+	// 	throw new Error('[[error:too-many-messages]]');
+	// }
 	if (!data) {
 		throw new Error('[[error:invalid-data]]');
 	}

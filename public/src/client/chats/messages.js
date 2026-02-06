@@ -24,14 +24,8 @@ define('forum/chats/messages', [
 		({ roomId, message } = await hooks.fire('filter:chat.send', payload));
 		const replyToEl = chatComposer.find('[component="chat/composer/replying-to"]');
 		const toMid = replyToEl.attr('data-tomid');
-		// Maybe useful?
-		// In the front end, there should be an element like this when forwarding a message:
-		// <div component="chat/composer/forwarded-from" 
-		// class="text-sm px-2 mb-1 d-flex gap-2 align-items-center" data-forwardmid="8">
-		const forwardFromEl = chatComposer.find('[component="chat/composer/forwarded-from"]');
-		const forwardMid = forwardFromEl.attr('data-forwardmid');
 
-		api.post(`/chats/${roomId}`, { message, toMid: toMid, forwardMid: forwardMid}).then(() => {
+		api.post(`/chats/${roomId}`, { message, toMid: toMid}).then(() => {
 			hooks.fire('action:chat.sent', { roomId, message });
 			replyToEl.addClass('hidden');
 			replyToEl.attr('data-tomid', '');
@@ -203,29 +197,6 @@ define('forum/chats/messages', [
 		}
 		composerEl.find('[component="chat/input"]').trigger('focus');
 	};
-
-	// messages.prepForwardFrom = async function (msgEl, chatMessageWindow) {
-	// 	// TODO: This needs to be changed according to what is in the front-end
-	// 	// Right now this is broken
-	// 	const chatContent = chatMessageWindow.find('[component="chat/message/content"]');
-	// 	const composerEl = chatMessageWindow.find('[component="chat/composer"]');
-	// 	const mid = msgEl.attr('data-mid');
-	// 	const forwardFromEl = composerEl.find('[component="chat/composer/forwarded-from"]');
-	// 	forwardFromEl.attr('data-forwardmid', mid)
-	// 		.find('[component="chat/composer/forwarded-from-text"]')
-	// 		.translateText(`[[modules:chat.forwarded-from, ${msgEl.attr('data-displayname')}]]`);
-	// 	forwardFromEl.removeClass('hidden');
-	// 	forwardFromEl.find('[component="chat/composer/forwarded-from-cancel"]').off('click')
-	// 		.on('click', () => {
-	// 			forwardFromEl.attr('data-forwardmid', '');
-	// 			forwardFromEl.addClass('hidden');
-	// 		});
-
-	// 	if (chatContent.length && messages.isAtBottom(chatContent)) {
-	// 		messages.scrollToBottom(chatContent);
-	// 	}
-	// 	composerEl.find('[component="chat/input"]').trigger('focus');
-	// };
 
 	messages.prepEdit = async function (msgEl, mid, roomId) {
 		const { content: raw } = await api.get(`/chats/${roomId}/messages/${mid}/raw`);
@@ -631,22 +602,38 @@ define('forum/chats/messages', [
 				timeout: 2000,
 			});
 
+			const message = '(Forwarded Message)'; // In future, implement adding message to forwarded message
+			api.post(`/chats/${toRoomId}`, { message, forwardMid: messageId }).then(() => {
+				hooks.fire('action:chat.sent', { toRoomId, message });
+			}).catch((err) => {
+				if (err.message === '[[error:email-not-confirmed-chat]]') {
+					return messagesModule.showEmailConfirmWarning(err.message);
+				}
+
+				alerts.alert({
+					alert_id: 'chat_spam_error',
+					title: '[[global:alert.error]]',
+					message: err.message,
+					type: 'danger',
+					timeout: 10000,
+				});
+			});
 			// TODO: Replace with actual API call when backend is ready
 			// For now, just show success message
-			// const response = await api.post(`/chats/${fromRoomId}/messages/${messageId}/forward`, {
-			//     toRoomId: toRoomId
+			// const response = await api.post(`/chats/${toRoomId}`, {
+			//     forwardMid: messageId
 			// });
 
 			// Simulated success (remove this when backend is ready)
-			setTimeout(function () {
-				alerts.alert({
-					alert_id: 'message_forwarded',
-					title: '[[global:alert.success]]',
-					message: '[[modules:chat.message-forwarded]]',
-					type: 'success',
-					timeout: 3000,
-				});
-			}, 500);
+			// setTimeout(function () {
+			//  alerts.alert({
+			//      alert_id: 'message_forwarded',
+			//      title: '[[global:alert.success]]',
+			//      message: '[[modules:chat.message-forwarded]]',
+			//      type: 'success',
+			//      timeout: 3000,
+			//  });
+			// }, 500);
 
 			hooks.fire('action:chat.forwarded', {
 				messageId: messageId,
