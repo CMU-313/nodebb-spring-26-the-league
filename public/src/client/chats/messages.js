@@ -206,6 +206,29 @@ define('forum/chats/messages', [
 		composerEl.find('[component="chat/input"]').trigger('focus');
 	};
 
+	// messages.prepForwardFrom = async function (msgEl, chatMessageWindow) {
+	// 	// TODO: This needs to be changed according to what is in the front-end
+	// 	// Right now this is broken
+	// 	const chatContent = chatMessageWindow.find('[component="chat/message/content"]');
+	// 	const composerEl = chatMessageWindow.find('[component="chat/composer"]');
+	// 	const mid = msgEl.attr('data-mid');
+	// 	const forwardFromEl = composerEl.find('[component="chat/composer/forwarded-from"]');
+	// 	forwardFromEl.attr('data-forwardmid', mid)
+	// 		.find('[component="chat/composer/forwarded-from-text"]')
+	// 		.translateText(`[[modules:chat.forwarded-from, ${msgEl.attr('data-displayname')}]]`);
+	// 	forwardFromEl.removeClass('hidden');
+	// 	forwardFromEl.find('[component="chat/composer/forwarded-from-cancel"]').off('click')
+	// 		.on('click', () => {
+	// 			forwardFromEl.attr('data-forwardmid', '');
+	// 			forwardFromEl.addClass('hidden');
+	// 		});
+
+	// 	if (chatContent.length && messages.isAtBottom(chatContent)) {
+	// 		messages.scrollToBottom(chatContent);
+	// 	}
+	// 	composerEl.find('[component="chat/input"]').trigger('focus');
+	// };
+
 	messages.prepEdit = async function (msgEl, mid, roomId) {
 		const { content: raw } = await api.get(`/chats/${roomId}/messages/${mid}/raw`);
 		const editEl = await app.parseAndTranslate('partials/chats/edit-message', {

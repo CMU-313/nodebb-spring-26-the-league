@@ -109,8 +109,8 @@ chatsAPI.sortPublicRooms = async (caller, { roomIds, scores }) => {
 chatsAPI.get = async (caller, { uid, roomId }) => await messaging.loadRoom(caller.uid, { uid, roomId });
 
 chatsAPI.post = async (caller, data) => {
-	console.log(caller);
-	console.log(data);
+	// console.log(caller);
+	// console.log(data);
 	if (!data || !data.roomId || !caller.uid) {
 		throw new Error('[[error:invalid-data]]');
 	}

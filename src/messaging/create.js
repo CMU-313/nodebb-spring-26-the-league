@@ -91,7 +91,12 @@ module.exports = function (Messaging) {
 			db.incrObjectField('global', 'messageCount'),
 		];
 		if (data.toMid) {
+			// console.log(`Adding message ${mid} as a reply to ${data.toMid}`);
 			tasks.push(db.sortedSetAdd(`mid:${data.toMid}:replies`, timestamp, mid));
+		}
+		if (data.forwardMid) {
+			// console.log(`Adding message ${mid} as a forward of ${data.forwardMid}`);
+			tasks.push(db.sortedSetAdd(`mid:${data.forwardMid}:forwards`, timestamp, mid));
 		}
 		if (roomData.public) {
 			tasks.push(

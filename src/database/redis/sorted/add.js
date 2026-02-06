@@ -4,6 +4,7 @@ module.exports = function (module) {
 	const utils = require('../../../utils');
 
 	module.sortedSetAdd = async function (key, score, value) {
+		// console.log(`Key: ${key}, Score: ${score}, Value: ${value}`);
 		if (!key) {
 			return;
 		}
