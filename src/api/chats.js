@@ -125,11 +125,20 @@ chatsAPI.post = async (caller, data) => {
 		throw new Error('[[error:too-many-messages]]');
 	}
 
+	if (data.hasOwnProperty('forwardMid') && data.forwardMid !== null && data.forwardMid !== '') {
+		// Match existing error semantics for invalid message ids
+		if (!isFinite(data.forwardMid)) {
+			throw new Error('[[error:invalid-mid]]');
+		}
+		data.forwardMid = parseInt(data.forwardMid, 10);
+	}
+
 	const message = await messaging.addMessage({
 		uid: caller.uid,
 		roomId: data.roomId,
 		content: data.message,
 		toMid: data.toMid,
+		forwardMid: data.forwardMid,
 		timestamp: Date.now(),
 		ip: caller.ip,
 	});
