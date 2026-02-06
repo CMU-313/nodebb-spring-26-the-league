@@ -363,17 +363,16 @@ define('forum/chats/messages', [
 	 * Initialize forward message dropdown
 	 */
 	messages.initForwardDropdown = function () {
-		console.log('Initializing forward message dropdown handlers');
-		$(document).off('click.forward').on('click.forward', '[component="chat/message/reply"]', function (e) {
+		$(document).off('click.forward').on('click.forward', '[data-action="forward"]', function (e) {
 			e.preventDefault();
 			e.stopPropagation();
 			const msgEl = $(this).closest('[component="chat/message"]');
 			const mid = msgEl.attr('data-mid');
 			const roomId = msgEl.closest('[component="chat/messages"]').attr('data-roomid');
-			
+
 			// Close any other open dropdowns
 			$('.forward-dropdown').removeClass('show');
-			
+
 			// Toggle this dropdown
 			const dropdown = msgEl.find('.forward-dropdown');
 			if (dropdown.hasClass('show')) {
@@ -396,46 +395,6 @@ define('forum/chats/messages', [
 			e.stopPropagation();
 			$(this).closest('.forward-dropdown').removeClass('show');
 		});
-
-		// Show dropdown on message hover (with small delay to avoid flicker)
-		$(document).off('mouseenter.forward mouseleave.forward', '[component="chat/message"]').on('mouseenter.forward', '[component="chat/message"]', function () {
-			const msgEl = $(this);
-			// Clear any pending hide timer
-			clearTimeout(msgEl.data('forwardHideTimer'));
-			// If already shown, nothing to do
-			const dropdown = msgEl.find('.forward-dropdown');
-			if (dropdown.hasClass('show')) {
-				return;
-			}
-			// Set a short timer to open dropdown (prevents accidental triggers)
-			const openTimer = setTimeout(() => {
-				const mid = msgEl.attr('data-mid');
-				const roomId = msgEl.closest('[component="chat/messages"]').attr('data-roomid');
-				messages.showForwardDropdown(mid, roomId, msgEl);
-			}, 250);
-			msgEl.data('forwardOpenTimer', openTimer);
-		}).on('mouseleave.forward', '[component="chat/message"]', function () {
-			const msgEl = $(this);
-			// Cancel open timer if still pending
-			clearTimeout(msgEl.data('forwardOpenTimer'));
-			// Start hide timer so user can move into dropdown
-			const dropdown = msgEl.find('.forward-dropdown');
-			const hideTimer = setTimeout(() => {
-				dropdown.removeClass('show');
-			}, 300);
-			msgEl.data('forwardHideTimer', hideTimer);
-		});
-
-		// Keep dropdown open if hovered, hide when leaving dropdown
-		$(document).off('mouseenter.forwardDropdown mouseleave.forwardDropdown', '.forward-dropdown').on('mouseenter.forwardDropdown', '.forward-dropdown', function () {
-			const dropdown = $(this);
-			clearTimeout(dropdown.data('forwardHideTimer'));
-		}).on('mouseleave.forwardDropdown', '.forward-dropdown', function () {
-			const dropdown = $(this);
-			// hide shortly after leaving dropdown
-			const hideTimer = setTimeout(() => dropdown.removeClass('show'), 200);
-			dropdown.data('forwardHideTimer', hideTimer);
-		});
 	};
 
 	/**
@@ -444,7 +403,7 @@ define('forum/chats/messages', [
 	messages.showForwardDropdown = async function (mid, currentRoomId, msgEl) {
 		const dropdown = msgEl.find('.forward-dropdown');
 		dropdown.addClass('show');
-		
+
 		// Show loading state
 		dropdown.find('.forward-loading').show();
 		dropdown.find('.forward-recipients-container').empty();
@@ -453,9 +412,9 @@ define('forum/chats/messages', [
 		try {
 			// Fetch available rooms (excluding current room)
 			const rooms = await messages.fetchAvailableRooms(currentRoomId);
-			
+
 			dropdown.find('.forward-loading').hide();
-			
+
 			if (rooms.length === 0) {
 				dropdown.find('.forward-no-results').show();
 				return;
@@ -463,7 +422,7 @@ define('forum/chats/messages', [
 
 			// Render rooms
 			messages.renderForwardRecipients(dropdown, rooms, mid, currentRoomId);
-			
+
 		} catch (err) {
 			dropdown.find('.forward-loading').hide();
 			alerts.error('Failed to load chats');
@@ -478,7 +437,7 @@ define('forum/chats/messages', [
 		try {
 			// Fetch rooms from API
 			const data = await api.get('/chats', { start: 0 });
-			
+
 			if (!data || !data.rooms) {
 				console.warn('No rooms returned from API');
 				return [];
@@ -528,8 +487,8 @@ define('forum/chats/messages', [
 			const recipientHtml = `
 				<div class="forward-recipient-item" data-roomid="${room.roomId}" data-mid="${mid}">
 					<div class="forward-recipient-avatar">
-						${room.avatar ? 
-								`<img src="${room.avatar}" alt="${room.roomName}">` : 
+						${room.avatar ?
+								`<img src="${room.avatar}" alt="${room.roomName}">` :
 								`<i class="${room.icon || 'fa fa-user'}"></i>`
 						}
 					</div>
@@ -548,7 +507,7 @@ define('forum/chats/messages', [
 			const recipientEl = $(this);
 			const targetRoomId = recipientEl.attr('data-roomid');
 			const messageId = recipientEl.attr('data-mid');
-			
+
 			messages.forwardMessage(messageId, currentRoomId, targetRoomId);
 			dropdown.removeClass('show');
 		});
@@ -562,10 +521,10 @@ define('forum/chats/messages', [
 	 */
 	messages.initForwardSearch = function (dropdown, rooms, mid, currentRoomId) {
 		const searchInput = dropdown.find('.forward-search-input');
-		
+
 		searchInput.off('input').on('input', function () {
 			const query = $(this).val().toLowerCase().trim();
-			
+
 			if (!query) {
 				// Show all rooms
 				messages.renderForwardRecipients(dropdown, rooms, mid, currentRoomId);
@@ -649,5 +608,4 @@ define('forum/chats/messages', [
 
 	return messages;
 });
-
 

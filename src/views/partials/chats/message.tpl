@@ -4,6 +4,22 @@
 	<!-- IMPORT partials/chats/parent.tpl -->
 	{{{ end }}}
 
+	{{{ if messages.forwardedMessage }}}
+	<div class="d-flex ms-4 mb-2 align-items-center">
+		<div component="chat/message/forwarded" data-forward-mid="{messages.forwardedMessage.mid}" data-uid="{messages.forwardedMessage.fromuid}" class="btn btn-ghost btn-sm d-flex gap-2 ff-secondary text-start flex-row w-100">
+			<div class="d-flex gap-2 text-sm text-nowrap">
+				<span class="text-muted"><i class="fa fa-share"></i></span>
+				<div class="d-flex flex-nowrap gap-1 align-items-center">
+					<a href="{config.relative_path}/user/{messages.forwardedMessage.user.userslug}" class="text-decoration-none lh-1">{buildAvatar(messages.forwardedMessage.user, "14px", true, "not-responsive align-middle")}</a>
+					<a class="chat-user fw-semibold text-truncate" style="max-width: 150px;" href="{config.relative_path}/user/{messages.forwardedMessage.user.userslug}">{messages.forwardedMessage.user.displayname}</a>
+				</div>
+				<span class="chat-timestamp text-muted timeago text-nowrap hidden" title="{messages.forwardedMessage.timestampISO}"></span>
+			</div>
+			<div component="chat/message/forwarded/content" class="text-muted line-clamp-1 text-break w-100">{messages.forwardedMessage.content}</div>
+		</div>
+	</div>
+	{{{ end }}}
+
 	<div class="message-header lh-1 d-flex align-items-center gap-2 text-sm {{{ if !messages.newSet }}}hidden{{{ end }}} pb-2">
 		<a href="{config.relative_path}/user/{messages.fromUser.userslug}" class="text-decoration-none">{buildAvatar(messages.fromUser, "18px", true, "not-responsive")}</a>
 		<span class="chat-user fw-semibold"><a href="{config.relative_path}/user/{messages.fromUser.userslug}">{messages.fromUser.displayname}</a></span>
@@ -26,7 +42,7 @@
 			<div class="btn-group border shadow-sm controls position-absolute bg-body end-0" style="bottom:1rem;">
 				<!-- IMPORT partials/chats/add-reaction.tpl -->
 				<button class="btn btn-sm btn-link" data-action="reply" title="[[topic:reply]]"><i class="fa fa-reply"></i></button>
-        <button class="btn btn-sm btn-link" data-action="forward" title="[[topic:forward]"><i class="fa fa-share"></i></button>
+				<button class="btn btn-sm btn-link" data-action="forward" title="[[topic:forward]]"><i class="fa fa-share"></i></button>
 
 				<div class="btn-group d-inline-block">
 					<button class="btn btn-sm btn-link dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-ellipsis" type="button"></i></button>
