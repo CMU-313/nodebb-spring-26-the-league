@@ -564,6 +564,14 @@ define('forum/chats/messages', [
 			const message = '(Forwarded Message)'; // In future, implement adding message to forwarded message
 			api.post(`/chats/${toRoomId}`, { message, forwardMid: messageId }).then(() => {
 				hooks.fire('action:chat.sent', { toRoomId, message });
+			}).then(() => {
+				alerts.alert({
+					alert_id: 'message_forwarded',
+					title: '[[global:alert.success]]',
+					message: '[[modules:chat.message-forwarded]]',
+					type: 'success',
+					timeout: 3000,
+				});
 			}).catch((err) => {
 				if (err.message === '[[error:email-not-confirmed-chat]]') {
 					return messagesModule.showEmailConfirmWarning(err.message);
@@ -576,28 +584,6 @@ define('forum/chats/messages', [
 					type: 'danger',
 					timeout: 10000,
 				});
-			});
-			// TODO: Replace with actual API call when backend is ready
-			// For now, just show success message
-			// const response = await api.post(`/chats/${toRoomId}`, {
-			//     forwardMid: messageId
-			// });
-
-			// Simulated success (remove this when backend is ready)
-			// setTimeout(function () {
-			//  alerts.alert({
-			//      alert_id: 'message_forwarded',
-			//      title: '[[global:alert.success]]',
-			//      message: '[[modules:chat.message-forwarded]]',
-			//      type: 'success',
-			//      timeout: 3000,
-			//  });
-			// }, 500);
-
-			hooks.fire('action:chat.forwarded', {
-				messageId: messageId,
-				fromRoomId: fromRoomId,
-				toRoomId: toRoomId,
 			});
 
 		} catch (err) {
