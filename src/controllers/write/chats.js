@@ -55,6 +55,7 @@ Chats.post = async (req, res) => {
 	const messageObj = await api.chats.post(req, {
 		message: req.body.message,
 		toMid: req.body.toMid,
+		forwardMid: req.body.forwardMid,
 		roomId: req.params.roomId,
 	});
 

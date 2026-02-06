@@ -24,8 +24,14 @@ define('forum/chats/messages', [
 		({ roomId, message } = await hooks.fire('filter:chat.send', payload));
 		const replyToEl = chatComposer.find('[component="chat/composer/replying-to"]');
 		const toMid = replyToEl.attr('data-tomid');
+		// Maybe useful?
+		// In the front end, there should be an element like this when forwarding a message:
+		// <div component="chat/composer/forwarded-from" 
+		// class="text-sm px-2 mb-1 d-flex gap-2 align-items-center" data-forwardmid="8">
+		const forwardFromEl = chatComposer.find('[component="chat/composer/forwarded-from"]');
+		const forwardMid = forwardFromEl.attr('data-forwardmid');
 
-		api.post(`/chats/${roomId}`, { message, toMid: toMid }).then(() => {
+		api.post(`/chats/${roomId}`, { message, toMid: toMid, forwardMid: forwardMid}).then(() => {
 			hooks.fire('action:chat.sent', { roomId, message });
 			replyToEl.addClass('hidden');
 			replyToEl.attr('data-tomid', '');
@@ -197,6 +203,29 @@ define('forum/chats/messages', [
 		}
 		composerEl.find('[component="chat/input"]').trigger('focus');
 	};
+
+	// messages.prepForwardFrom = async function (msgEl, chatMessageWindow) {
+	// 	// TODO: This needs to be changed according to what is in the front-end
+	// 	// Right now this is broken
+	// 	const chatContent = chatMessageWindow.find('[component="chat/message/content"]');
+	// 	const composerEl = chatMessageWindow.find('[component="chat/composer"]');
+	// 	const mid = msgEl.attr('data-mid');
+	// 	const forwardFromEl = composerEl.find('[component="chat/composer/forwarded-from"]');
+	// 	forwardFromEl.attr('data-forwardmid', mid)
+	// 		.find('[component="chat/composer/forwarded-from-text"]')
+	// 		.translateText(`[[modules:chat.forwarded-from, ${msgEl.attr('data-displayname')}]]`);
+	// 	forwardFromEl.removeClass('hidden');
+	// 	forwardFromEl.find('[component="chat/composer/forwarded-from-cancel"]').off('click')
+	// 		.on('click', () => {
+	// 			forwardFromEl.attr('data-forwardmid', '');
+	// 			forwardFromEl.addClass('hidden');
+	// 		});
+
+	// 	if (chatContent.length && messages.isAtBottom(chatContent)) {
+	// 		messages.scrollToBottom(chatContent);
+	// 	}
+	// 	composerEl.find('[component="chat/input"]').trigger('focus');
+	// };
 
 	messages.prepEdit = async function (msgEl, mid, roomId) {
 		const { content: raw } = await api.get(`/chats/${roomId}/messages/${mid}/raw`);

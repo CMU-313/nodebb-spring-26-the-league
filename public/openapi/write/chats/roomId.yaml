@@ -63,6 +63,9 @@ post:
             message:
               type: string
               example: This is a test message
+            forwardMid:
+              type: number
+              example: 123
           required:
             - message
   responses:

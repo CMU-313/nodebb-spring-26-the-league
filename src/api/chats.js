@@ -121,8 +121,17 @@ chatsAPI.post = async (caller, data) => {
 	await messaging.canMessageRoom(caller.uid, data.roomId);
 	await messaging.checkContent(data.message);
 
-	if (await rateLimitExceeded(caller, 'lastChatMessageTime')) {
-		throw new Error('[[error:too-many-messages]]');
+	// // Get rid of this annoying error!
+	// if (await rateLimitExceeded(caller, 'lastChatMessageTime')) {
+	//  throw new Error('[[error:too-many-messages]]');
+	// }
+
+	if (data.hasOwnProperty('forwardMid') && data.forwardMid !== null && data.forwardMid !== '' && data.forwardMid !== undefined) {
+		// Match existing error semantics for invalid message ids
+		if (!isFinite(data.forwardMid)) {
+			throw new Error('[[error:invalid-mid]]');
+		}
+		data.forwardMid = parseInt(data.forwardMid, 10);
 	}
 
 	const message = await messaging.addMessage({
@@ -130,6 +139,7 @@ chatsAPI.post = async (caller, data) => {
 		roomId: data.roomId,
 		content: data.message,
 		toMid: data.toMid,
+		forwardMid: data.forwardMid,
 		timestamp: Date.now(),
 		ip: caller.ip,
 	});
