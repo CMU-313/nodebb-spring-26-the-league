@@ -72,5 +72,41 @@
 				</div>
 			</div>
 		</div>
+
+		<!----------- Forward Message Dropdown ------------>
+		<div class="forward-dropdown" data-message-id="{messages.messageId}">
+			<div class="forward-dropdown-header">
+				<span class="forward-dropdown-title">Forward to:</span>
+				<button class="close-forward-dropdown" aria-label="Close">
+					<i class="fa fa-times"></i>
+				</button>
+			</div>
+			
+			<div class="forward-search-container">
+				<input type="text" 
+					class="form-control form-control-sm forward-search-input" 
+					placeholder="Search chats..."
+					autocomplete="off">
+			</div>
+			
+			<div class="forward-recipients-list">
+				<div class="forward-loading text-center py-3">
+					<i class="fa fa-spinner fa-spin"></i> Loading chats...
+				</div>
+				
+				<div class="forward-no-results text-center py-3">
+					<p class="text-muted mb-0">No chats found</p>
+				</div>
+				
+				<div class="forward-recipients-container">
+				</div>
+			</div>
+			
+			<div class="forward-dropdown-footer">
+				<small class="text-muted">Click a chat to forward</small>
+			</div>
+		</div>
+		<!-- End Forward Message Dropdown -->
+
 	</div>
 </li>
