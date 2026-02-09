@@ -51,10 +51,9 @@ chatsAPI.list = async (caller, { uid = caller.uid, start, stop, page, perPage } 
 };
 
 chatsAPI.create = async function (caller, data) {
-	// Also get rid of this annoying error here!
-	// if (await rateLimitExceeded(caller, 'lastChatRoomCreateTime')) {
-	// 	throw new Error('[[error:too-many-messages]]');
-	// }
+	if (await rateLimitExceeded(caller, 'lastChatRoomCreateTime')) {
+		throw new Error('[[error:too-many-messages]]');
+	}
 	if (!data) {
 		throw new Error('[[error:invalid-data]]');
 	}
@@ -122,10 +121,9 @@ chatsAPI.post = async (caller, data) => {
 	await messaging.canMessageRoom(caller.uid, data.roomId);
 	await messaging.checkContent(data.message);
 
-	// // Get rid of this annoying error!
-	// if (await rateLimitExceeded(caller, 'lastChatMessageTime')) {
-	//  throw new Error('[[error:too-many-messages]]');
-	// }
+	if (await rateLimitExceeded(caller, 'lastChatMessageTime')) {
+		throw new Error('[[error:too-many-messages]]');
+	}
 
 	if (data.hasOwnProperty('forwardMid') && data.forwardMid !== null && data.forwardMid !== '' && data.forwardMid !== undefined) {
 		// Match existing error semantics for invalid message ids
