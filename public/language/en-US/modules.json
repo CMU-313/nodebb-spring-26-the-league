@@ -1,4 +1,7 @@
 {
+    "chat.forwarding": "Forwarding Message",
+    "chat.forwarding-message": "Trying to forward message...",
+    "chat.message-forwarded": "Message forwarded successfully.",
     "chat.room-id": "Room %1",
     "chat.chatting-with": "Chat with",
     "chat.placeholder": "Type chat message here, drag & drop images",

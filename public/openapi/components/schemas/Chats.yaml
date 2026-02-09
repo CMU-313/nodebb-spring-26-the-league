@@ -118,6 +118,12 @@ MessageObject:
       type: number
     newSet:
       type: boolean
+    forwardMid:
+      type: number
+      description: The message ID of the forwarded message, if this message is a forward
+    forwardedMessage:
+      $ref: '#/MessageObject'
+      description: The full message object of the forwarded message, populated when forwardMid is present
 RoomUserList:
   type: object
   properties:

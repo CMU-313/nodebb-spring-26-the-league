@@ -628,6 +628,51 @@ describe('Messaging Library', () => {
 		});
 	});
 
+	describe('forwardMid', () => {
+		let roomId;
+		let firstMid;
+		before(async () => {
+			// create room
+			const { body } = await callv3API('post', `/chats`, {
+				uids: [mocks.users.bar.uid],
+			}, 'foo');
+			roomId = body.response.roomId;
+			// send message
+			const result = await callv3API('post', `/chats/${roomId}`, {
+				roomId: roomId,
+				message: 'first chat message',
+			}, 'foo');
+
+			firstMid = result.body.response.mid;
+		});
+
+		it('should fail if forwardMid is not a number', async () => {
+			const result = await callv3API('post', `/chats/${roomId}`, {
+				roomId: roomId,
+				message: 'invalid',
+				forwardMid: 'osmaosd',
+			}, 'foo');
+			assert.strictEqual(result.body.status.message, 'Invalid Chat Message ID');
+		});
+
+		it('should forward firstMid using forwardMid', async () => {
+			const { body } = await callv3API('post', `/chats/${roomId}`, {
+				roomId: roomId,
+				message: 'forwarding message',
+				forwardMid: firstMid,
+			}, 'bar');
+			assert(body.response.mid);
+
+			// Verify retrieval
+			const { body: getBody } = await callv3API('get', `/chats/${roomId}`, {}, 'bar');
+			const messages = getBody.response.messages;
+			const forwardedMsg = messages.find(m => m.messageId === body.response.mid);
+			assert(forwardedMsg.forwardedMessage);
+			assert.equal(forwardedMsg.forwardedMessage.mid, firstMid);
+			assert.equal(forwardedMsg.forwardedMessage.content, 'first chat message');
+		});
+	});
+
 	describe('edit/delete', () => {
 		const socketModules = require('../src/socket.io/modules');
 		let mid;

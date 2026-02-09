@@ -2,6 +2,9 @@
 	<div component="chat/composer/replying-to" data-tomid="" class="text-sm px-2 mb-1 d-flex gap-2 align-items-center hidden">
 		<div component="chat/composer/replying-to-text"></div> <button component="chat/composer/replying-to-cancel" class="btn btn-ghost btn-sm px-2 py-1"><i class="fa fa-times"></i></button>
 	</div>
+	<div component="chat/composer/forwarded-from" data-tomid="" class="text-sm px-2 mb-1 d-flex gap-2 align-items-center hidden">
+		<div component="chat/composer/forwarded-from-text"></div> <button component="chat/composer/forwarded-from-cancel" class="btn btn-ghost btn-sm px-2 py-1"><i class="fa fa-times"></i></button>
+	</div>
 	<div class="w-100 flex-grow-1 flex-nowrap position-relative d-flex rounded-2 border border-secondary p-1 align-items-end">
 		{{{ if canUpload }}}
 		<button component="chat/upload/button" class="btn btn-ghost btn-sm d-flex p-2" type="button" title="[[global:upload]]" data-bs-toggle="tooltip"><i class="fa fa-fw fa-upload"></i></button>
