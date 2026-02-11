@@ -176,7 +176,13 @@ module.exports = function (Messaging) {
 	}
 
 	async function addForwardedMessages(messages, uid, roomId) {
-		let forwardMids = messages.map(msg => (msg && msg.hasOwnProperty('forwardMid') ? parseInt(msg.forwardMid, 10) : null)).filter(Boolean);
+		messages.forEach((msg) => {
+			if (msg.hasOwnProperty('forwardMid') && (!msg.forwardMid || msg.forwardMid === 0)) {
+				delete msg.forwardMid;
+			}
+		});
+
+		let forwardMids = messages.map(msg => (msg && msg.forwardMid && msg.forwardMid > 0 ? parseInt(msg.forwardMid, 10) : null)).filter(Boolean);
 
 		if (!forwardMids.length) {
 			return;
@@ -214,9 +220,13 @@ module.exports = function (Messaging) {
 		});
 
 		messages.forEach((msg) => {
-			if (parents[msg.forwardMid]) {
-				msg.forwardedMessage = parents[msg.forwardMid];
-				msg.forwardedMessage.mid = msg.forwardMid;
+			if (msg.forwardMid && msg.forwardMid > 0) {
+				if (parents[msg.forwardMid]) {
+					msg.forwardedMessage = parents[msg.forwardMid];
+					msg.forwardedMessage.mid = msg.forwardMid;
+				} else {
+					msg.forwardedMessage = null;
+				}
 			}
 		});
 	}

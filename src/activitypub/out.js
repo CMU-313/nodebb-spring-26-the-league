@@ -99,9 +99,27 @@ Out.create.note = enabledCheck(async (uid, post) => {
 });
 
 Out.create.privateNote = enabledCheck(async (messageObj) => {
+	if (!utils.isNumber(messageObj.mid)) {
+		return;
+	}
+
 	const { roomId } = messageObj;
+	
+	if (!roomId) {
+		return;
+	}
+
+	const roomData = await messaging.getRoomData(roomId);
+	if (!roomData) {
+		return;
+	}
+
 	let targets = await messaging.getUidsInRoom(roomId, 0, -1);
 	targets = targets.filter(uid => !utils.isNumber(uid)); // remote uids only
+
+	if (targets.length === 0) {
+		return;
+	}
 
 	const object = await activitypub.mocks.notes.private({ messageObj });
 
@@ -198,10 +216,24 @@ Out.update.privateNote = enabledCheck(async (uid, messageObj) => {
 	}
 
 	const { roomId } = messageObj;
+	
+	if (!roomId) {
+		return;
+	}
+
+	const roomData = await messaging.getRoomData(roomId);
+	if (!roomData) {
+		return;
+	}
+
 	let uids = await messaging.getUidsInRoom(roomId, 0, -1);
 	uids = uids.filter(uid => String(uid) !== String(messageObj.fromuid)); // no author
 	const to = uids.map(uid => (utils.isNumber(uid) ? `${nconf.get('url')}/uid/${uid}` : uid));
 	const targets = uids.filter(uid => !utils.isNumber(uid)); // remote uids only
+
+	if (targets.length === 0) {
+		return;
+	}
 
 	const object = await activitypub.mocks.notes.private({ messageObj });
 
@@ -306,7 +338,20 @@ Out.dislike.note = enabledCheck(async (uid, pid) => {
 Out.announce = {};
 
 Out.announce.topic = enabledCheck(async (tid, uid) => {
-	const { mainPid: pid, cid } = await topics.getTopicFields(tid, ['mainPid', 'cid']);
+	if (!tid) {
+		return;
+	}
+
+	const topicFields = await topics.getTopicFields(tid, ['mainPid', 'cid']);
+	if (!topicFields) {
+		return;
+	}
+
+	const { mainPid: pid, cid } = topicFields;
+
+	if (!pid) {
+		return;
+	}
 
 	if (uid) {
 		const exists = await user.exists(uid);
@@ -321,15 +366,24 @@ Out.announce.topic = enabledCheck(async (tid, uid) => {
 	}
 
 	const authorUid = await posts.getPostField(pid, 'uid'); // author
+	if (!authorUid) {
+		return;
+	}
+
 	const allowed = await privileges.posts.can('topics:read', pid, activitypub._constants.uid);
 	if (!allowed) {
 		activitypub.helpers.log(`[activitypub/api] Not federating announce of pid ${pid} to the fediverse due to privileges.`);
 		return;
 	}
 
+	const publicAddress = activitypub._constants.publicAddress;
+	if (!publicAddress) {
+		return;
+	}
+
 	const { to, cc, targets } = await activitypub.buildRecipients({
 		id: pid,
-		to: [activitypub._constants.publicAddress],
+		to: [publicAddress],
 	}, uid ? { uid } : { cid });
 	if (!utils.isNumber(authorUid)) {
 		cc.push(authorUid);
