@@ -376,7 +376,7 @@ Out.announce.topic = enabledCheck(async (tid, uid) => {
 		return;
 	}
 
-	const publicAddress = activitypub._constants.publicAddress;
+	const { publicAddress } = activitypub._constants;
 	if (!publicAddress) {
 		return;
 	}

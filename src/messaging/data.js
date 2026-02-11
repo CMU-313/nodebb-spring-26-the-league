@@ -182,7 +182,9 @@ module.exports = function (Messaging) {
 			}
 		});
 
-		let forwardMids = messages.map(msg => (msg && msg.forwardMid && msg.forwardMid > 0 ? parseInt(msg.forwardMid, 10) : null)).filter(Boolean);
+		let forwardMids = messages.map(msg => (
+			msg && msg.forwardMid && msg.forwardMid > 0 ? parseInt(msg.forwardMid, 10) : null
+		)).filter(Boolean);
 
 		if (!forwardMids.length) {
 			return;
