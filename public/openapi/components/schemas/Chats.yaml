@@ -33,6 +33,22 @@ RoomObject:
       description: Whether join/leave messages are enabled in the room
 MessageObject:
   type: object
+  required:
+    - content
+    - timestamp
+    - fromuid
+    - roomId
+    - deleted
+    - system
+    - edited
+    - timestampISO
+    - editedISO
+    - mid
+    - messageId
+    - isOwner
+    - fromUser
+    - self
+    - newSet
   properties:
     content:
       type: string
@@ -123,6 +139,7 @@ MessageObject:
       description: The message ID of the forwarded message, if this message is a forward
     forwardedMessage:
       $ref: '#/MessageObject'
+      nullable: true
       description: The full message object of the forwarded message, populated when forwardMid is present
 RoomUserList:
   type: object

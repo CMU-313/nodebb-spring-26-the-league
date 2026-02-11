@@ -543,7 +543,12 @@ ActivityPub.buildRecipients = async function (object, { pid, uid, cid }) {
 	 *     - `uid`: includes followers of the passed-in uid (local only)
 	 *     - `pid`: includes post announcers and all topic participants
 	 */
+	if (!object) {
+		return { to: [], cc: [], targets: new Set() };
+	}
 	let { to, cc } = object;
+	to = Array.isArray(to) ? to : (to ? [to] : []);
+	cc = Array.isArray(cc) ? cc : (cc ? [cc] : []);
 	to = new Set(to);
 	cc = new Set(cc);
 
