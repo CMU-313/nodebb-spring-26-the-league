@@ -14,6 +14,27 @@
 			{{{end}}}
 		</select>
 
+		<div id="custom-skin-colors" class="mt-3" style="display: none;">
+			<label class="form-label fw-bold">[[user:custom-skin-colors]]</label>
+			<div class="row g-3">
+				<div class="col-md-6">
+					<label for="custom-primary-color" class="form-label small">[[user:primary-color]]</label>
+					<div class="input-group input-group-sm">
+						<input type="color" id="custom-primary-color" class="form-control form-control-color" value="{{{ if settings.customPrimaryColor }}}{settings.customPrimaryColor}{{{ else }}}#007bff{{{ end }}}" title="[[user:primary-color]]">
+						<input type="text" id="custom-primary-color-text" class="form-control" placeholder="#007bff" maxlength="7" data-property="customPrimaryColor">
+					</div>
+				</div>
+				<div class="col-md-6">
+					<label for="custom-secondary-color" class="form-label small">[[user:secondary-color]]</label>
+					<div class="input-group input-group-sm">
+						<input type="color" id="custom-secondary-color" class="form-control form-control-color" value="{{{ if settings.customSecondaryColor }}}{settings.customSecondaryColor}{{{ else }}}#6c757d{{{ end }}}" title="[[user:secondary-color]]">
+						<input type="text" id="custom-secondary-color-text" class="form-control" placeholder="#6c757d" maxlength="7" data-property="customSecondaryColor">
+					</div>
+				</div>
+			</div>
+			<p class="form-text text-xs mt-2">[[user:custom-skin-colors-help]]</p>
+		</div>
+
 		<hr/>
 		{{{ end }}}
 

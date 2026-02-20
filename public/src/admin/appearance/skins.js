@@ -21,6 +21,17 @@ define('admin/appearance/skins', [
 					highlightSelectedTheme(app.config.bootswatchSkin);
 				}
 			});
+
+			// Initialize color pickers when modal/form is shown
+			hooks.on('action:settings.sorted-list.modal', function (data) {
+				// Small delay to ensure DOM is ready
+				setTimeout(function () {
+					if ($('#primary-color').length) {
+						initColorPickers();
+					}
+				}, 100);
+			});
+
 			settings.load('custom-skins', $('.custom-skin-settings'));
 			Skins.render(bsData);
 		});
@@ -123,6 +134,159 @@ define('admin/appearance/skins', [
 				.addClass('btn-success');
 		});
 	}
+
+		function initColorPickers() {
+			// Find elements within the modal (they might be in a bootbox modal)
+			const modal = $('.bootbox');
+			let primaryColorPicker = modal.find('#primary-color');
+			let primaryColorText = modal.find('#primary-color-text');
+			let secondaryColorPicker = modal.find('#secondary-color');
+			let secondaryColorText = modal.find('#secondary-color-text');
+			let variablesTextarea = modal.find('#custom-skin-variables');
+
+			// Fallback to document if not in modal
+			if (!primaryColorPicker.length) {
+				primaryColorPicker = $('#primary-color');
+				primaryColorText = $('#primary-color-text');
+				secondaryColorPicker = $('#secondary-color');
+				secondaryColorText = $('#secondary-color-text');
+				variablesTextarea = $('#custom-skin-variables');
+			}
+
+			if (!primaryColorPicker.length || !variablesTextarea.length) {
+				return;
+			}
+
+			// Remove existing event handlers to prevent duplicates
+			primaryColorPicker.off('input');
+			secondaryColorPicker.off('input');
+			primaryColorText.off('input');
+			secondaryColorText.off('input');
+
+			// Parse existing colors from variables
+			const variables = variablesTextarea.val() || '';
+			const primaryMatch = variables.match(/\$primary:\s*([^;]+);/);
+			const secondaryMatch = variables.match(/\$secondary:\s*([^;]+);/);
+
+			if (primaryMatch) {
+				const primaryColor = parseColor(primaryMatch[1].trim());
+				if (primaryColor) {
+					primaryColorPicker.val(primaryColor);
+					primaryColorText.val(primaryColor);
+				}
+			} else {
+				// Set defaults if not present
+				primaryColorPicker.val('#007bff');
+				primaryColorText.val('#007bff');
+			}
+
+			if (secondaryMatch) {
+				const secondaryColor = parseColor(secondaryMatch[1].trim());
+				if (secondaryColor) {
+					secondaryColorPicker.val(secondaryColor);
+					secondaryColorText.val(secondaryColor);
+				}
+			} else {
+				// Set defaults if not present
+				secondaryColorPicker.val('#6c757d');
+				secondaryColorText.val('#6c757d');
+			}
+
+			// Update variables when color picker changes
+			primaryColorPicker.on('input', function () {
+				const color = $(this).val();
+				primaryColorText.val(color);
+				updateVariables();
+			});
+
+			secondaryColorPicker.on('input', function () {
+				const color = $(this).val();
+				secondaryColorText.val(color);
+				updateVariables();
+			});
+
+			// Update color picker and variables when text input changes
+			primaryColorText.on('input', function () {
+				const color = $(this).val();
+				if (isValidColor(color)) {
+					primaryColorPicker.val(color);
+					updateVariables();
+				}
+			});
+
+			secondaryColorText.on('input', function () {
+				const color = $(this).val();
+				if (isValidColor(color)) {
+					secondaryColorPicker.val(color);
+					updateVariables();
+				}
+			});
+
+			function updateVariables() {
+				let vars = variablesTextarea.val() || '';
+				const primaryColor = primaryColorPicker.val();
+				const secondaryColor = secondaryColorPicker.val();
+
+				// Update or add $primary
+				if (vars.match(/\$primary:/)) {
+					vars = vars.replace(/\$primary:\s*[^;]+;/, `$primary: ${primaryColor};`);
+				} else {
+					// Add at the beginning if not present
+					vars = `$primary: ${primaryColor};\n$secondary: ${secondaryColor};\n` + vars;
+				}
+
+				// Update or add $secondary
+				if (vars.match(/\$secondary:/)) {
+					vars = vars.replace(/\$secondary:\s*[^;]+;/, `$secondary: ${secondaryColor};`);
+				} else if (!vars.match(/\$primary:/)) {
+					// Add if $primary was also not present
+					vars = `$primary: ${primaryColor};\n$secondary: ${secondaryColor};\n` + vars;
+				}
+
+				variablesTextarea.val(vars);
+			}
+
+			function parseColor(colorStr) {
+				// Remove quotes and whitespace
+				colorStr = colorStr.replace(/['"]/g, '').trim();
+				
+				// Handle hex colors
+				if (colorStr.match(/^#?[0-9A-Fa-f]{6}$/)) {
+					return colorStr.startsWith('#') ? colorStr : '#' + colorStr;
+				}
+				
+				// Handle rgb/rgba
+				if (colorStr.startsWith('rgb')) {
+					return colorStr;
+				}
+				
+				// Try to convert common color names to hex
+				const colorMap = {
+					'blue': '#007bff',
+					'indigo': '#6610f2',
+					'purple': '#6f42c1',
+					'pink': '#e83e8c',
+					'red': '#dc3545',
+					'orange': '#fd7e14',
+					'yellow': '#ffc107',
+					'green': '#28a745',
+					'teal': '#20c997',
+					'cyan': '#17a2b8',
+					'gray': '#6c757d',
+					'grey': '#6c757d',
+				};
+				
+				if (colorMap[colorStr.toLowerCase()]) {
+					return colorMap[colorStr.toLowerCase()];
+				}
+				
+				return null;
+			}
+
+			function isValidColor(color) {
+				return /^#?[0-9A-Fa-f]{6}$/.test(color) || color.startsWith('rgb');
+			}
+		}
 
 	return Skins;
 });
