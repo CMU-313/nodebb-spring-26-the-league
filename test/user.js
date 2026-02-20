@@ -1168,9 +1168,9 @@ describe('User', () => {
 			it('should fail to remove uploaded picture with invalid-data', (done) => {
 				socketUser.removeUploadedPicture({ uid: uid }, null, (err) => {
 					assert.equal(err.message, '[[error:invalid-data]]');
-					socketUser.removeUploadedPicture({ uid: uid }, { }, (err) => {
+					socketUser.removeUploadedPicture({ uid: uid }, {}, (err) => {
 						assert.equal(err.message, '[[error:invalid-data]]');
-						socketUser.removeUploadedPicture({ uid: null }, { }, (err) => {
+						socketUser.removeUploadedPicture({ uid: null }, {}, (err) => {
 							assert.equal(err.message, '[[error:invalid-data]]');
 							done();
 						});
@@ -1687,6 +1687,73 @@ describe('User', () => {
 			assert.strictEqual(userSettings.homePageRoute, 'category/6/testing-ground');
 		});
 
+
+		it('should save custom theme color settings', async () => {
+			const data = {
+				uid: testUid,
+				settings: {
+					topicsPerPage: '10',
+					postsPerPage: '5',
+					customThemeColor_headerBg: '#1a2b3c',
+					customThemeColor_headerText: '#ffffff',
+					customThemeColor_bodyBg: '#000000',
+					customThemeColor_bodyText: '#eeeeee',
+					customThemeColor_linkColor: '#00aaff',
+					customThemeColor_buttonBg: '#336699',
+					customThemeColor_buttonText: '#fafafa',
+				},
+			};
+			await apiUser.updateSettings({ uid: testUid }, data);
+			const userSettings = await User.getSettings(testUid);
+			assert.strictEqual(userSettings.customThemeColor_headerBg, '#1a2b3c');
+			assert.strictEqual(userSettings.customThemeColor_headerText, '#ffffff');
+			assert.strictEqual(userSettings.customThemeColor_bodyBg, '#000000');
+			assert.strictEqual(userSettings.customThemeColor_bodyText, '#eeeeee');
+			assert.strictEqual(userSettings.customThemeColor_linkColor, '#00aaff');
+			assert.strictEqual(userSettings.customThemeColor_buttonBg, '#336699');
+			assert.strictEqual(userSettings.customThemeColor_buttonText, '#fafafa');
+		});
+
+		it('should reject invalid custom theme color values', async () => {
+			const data = {
+				uid: testUid,
+				settings: {
+					topicsPerPage: '10',
+					postsPerPage: '5',
+					customThemeColor_headerBg: 'not-a-color',
+				},
+			};
+			try {
+				await apiUser.updateSettings({ uid: testUid }, data);
+				assert(false);
+			} catch (err) {
+				assert.equal(err.message, '[[error:invalid-theme-color]]');
+			}
+		});
+
+		it('should allow empty custom theme color values', async () => {
+			const data = {
+				uid: testUid,
+				settings: {
+					topicsPerPage: '10',
+					postsPerPage: '5',
+					customThemeColor_headerBg: '',
+					customThemeColor_headerText: '',
+				},
+			};
+			await apiUser.updateSettings({ uid: testUid }, data);
+			const userSettings = await User.getSettings(testUid);
+			assert.strictEqual(userSettings.customThemeColor_headerBg, '');
+			assert.strictEqual(userSettings.customThemeColor_headerText, '');
+		});
+
+		it('should sanitize custom theme color values on read', async () => {
+			const uid = testUid;
+			await db.setObjectField(`user:${uid}:settings`, 'customThemeColor_headerBg', '<script>alert("xss")</script>');
+			const userSettings = await User.getSettings(uid);
+			assert.strictEqual(userSettings.customThemeColor_headerBg.includes('<script>'), false);
+			assert.strictEqual(userSettings.customThemeColor_headerBg.includes('&lt;'), true);
+		});
 
 		it('should error if language is invalid', async () => {
 			const data = {
