@@ -3,7 +3,13 @@
 const db = require('../database');
 
 module.exports = function (Messaging) {
+	const emojiRegex = /^\p{Emoji}$/u;
+
 	Messaging.toggleReaction = async (uid, mid, roomId, emoji) => {
+		if (!emoji || !emojiRegex.test(emoji)) {
+			throw new Error('[[error:invalid-emoji]]');
+		}
+		
 		const isMessageInRoom = await db.isSortedSetMember(`chat:room:${roomId}:mids`, mid);
 		if (!isMessageInRoom) {
 			throw new Error('[[error:invalid-mid]]');
