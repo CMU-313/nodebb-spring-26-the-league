@@ -462,7 +462,7 @@ chatsAPI.toggleReaction = async (caller, { roomId, mid, emoji }) => {
 		throw new Error('[[error:no-privileges]]');
 	}
 	const result = await messaging.toggleReaction(caller.uid, mid, roomId, emoji);
-
+	const reactions = await messaging.getReactions(mid, roomId, caller.uid);
 	const ioRoom = require('../socket.io').in(`chat_room_${roomId}`);
 	if (ioRoom) {
 		ioRoom.emit('event:chats.reaction', {
@@ -470,8 +470,8 @@ chatsAPI.toggleReaction = async (caller, { roomId, mid, emoji }) => {
 			uid: caller.uid,
 			emoji,
 			added: result.added,
+			reactions,
 		});
 	}
-
 	return result;
 };
