@@ -876,4 +876,67 @@ describe('Messaging Library', () => {
 			assert.equal(response.statusCode, 404);
 		});
 	});
+
+	describe('Emoji Reactions', () => {
+		let mid;
+
+		before(async () => {
+			// Add bar to the room so they can view messages
+			await callv3API('post', `/chats/${roomId}/users`, { uids: [mocks.users.bar.uid] }, 'foo');
+			// Send a message to test reactions against
+			const { body } = await callv3API('post', `/chats/${roomId}`, { message: 'reaction test message' }, 'foo');
+			mid = body.response.messageId;
+			assert(mid);
+		});
+
+		it('should allow a user to add a reaction', async () => {
+			const { response, body } = await callv3API('post', `/chats/${roomId}/messages/${mid}/reactions`, { emoji: '👍' }, 'foo');
+			assert.strictEqual(response.statusCode, 200);
+			assert.strictEqual(body.response.added, true);
+			assert.strictEqual(body.response.emoji, '👍');
+		});
+
+		it('should toggle off a reaction if the same emoji is sent again', async () => {
+			const { response, body } = await callv3API('post', `/chats/${roomId}/messages/${mid}/reactions`, { emoji: '👍' }, 'foo');
+			assert.strictEqual(response.statusCode, 200);
+			assert.strictEqual(body.response.added, false);
+		});
+
+		it('should return reactions with correct count and self flag', async () => {
+			// foo reacts
+			await callv3API('post', `/chats/${roomId}/messages/${mid}/reactions`, { emoji: '😂' }, 'foo');
+			// herp reacts with same emoji
+			await callv3API('post', `/chats/${roomId}/messages/${mid}/reactions`, { emoji: '😂' }, 'herp');
+
+			const { response, body } = await callv3API('get', `/chats/${roomId}/messages/${mid}/reactions`, {}, 'foo');
+			assert.strictEqual(response.statusCode, 200);
+
+			const reaction = body.response.reactions.find(r => r.emoji === '😂');
+			assert(reaction);
+			assert.strictEqual(reaction.count, 2);
+			assert.strictEqual(reaction.self, true);
+		});
+
+		it('should reflect self as false for a user who has not reacted', async () => {
+			const { body } = await callv3API('get', `/chats/${roomId}/messages/${mid}/reactions`, {}, 'bar');
+			const reaction = body.response.reactions.find(r => r.emoji === '😂');
+			assert(reaction);
+			assert.strictEqual(reaction.self, false);
+		});
+
+		it('should reject an invalid emoji', async () => {
+			const { response } = await callv3API('post', `/chats/${roomId}/messages/${mid}/reactions`, { emoji: 'notanemoji' }, 'foo');
+			assert.strictEqual(response.statusCode, 400);
+		});
+
+		it('should reject a reaction from a user not in the room', async () => {
+			const { response } = await callv3API('post', `/chats/${roomId}/messages/${mid}/reactions`, { emoji: '👍' }, 'baz');
+			assert.strictEqual(response.statusCode, 403);
+		});
+
+		it('should include reactions in message payload', async () => {
+			const { body } = await callv3API('get', `/chats/${roomId}/messages/${mid}`, {}, 'foo');
+			assert(Array.isArray(body.response.reactions));
+		});
+	});
 });
