@@ -12,6 +12,53 @@
 			user: JSON.parse('{{userJSON}}')
 		};
 		document.documentElement.style.setProperty('--panel-offset', `0px`);
+		
+		// Apply custom skin colors if custom skin is active
+		(function() {
+			if (config.bootswatchSkin === 'custom' && app.user) {
+				// Try to get colors from user settings - they may be loaded async
+				// We'll apply them via the settings page script, but also try here
+				const primaryColor = '#007bff';
+				const secondaryColor = '#6c757d';
+				
+				function hexToRgb(hex) {
+					const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+					return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '0, 0, 0';
+				}
+				
+				const style = document.createElement('style');
+				style.id = 'custom-skin-styles';
+				style.textContent = `
+					.skin-custom {
+						--bs-primary: ${primaryColor} !important;
+						--bs-primary-rgb: ${hexToRgb(primaryColor)} !important;
+						--bs-secondary: ${secondaryColor} !important;
+						--bs-secondary-rgb: ${hexToRgb(secondaryColor)} !important;
+					}
+					.skin-custom .btn-primary {
+						background-color: ${primaryColor} !important;
+						border-color: ${primaryColor} !important;
+					}
+					.skin-custom .btn-secondary {
+						background-color: ${secondaryColor} !important;
+						border-color: ${secondaryColor} !important;
+					}
+					.skin-custom .text-primary {
+						color: ${primaryColor} !important;
+					}
+					.skin-custom .text-secondary {
+						color: ${secondaryColor} !important;
+					}
+					.skin-custom .bg-primary {
+						background-color: ${primaryColor} !important;
+					}
+					.skin-custom .bg-secondary {
+						background-color: ${secondaryColor} !important;
+					}
+				`;
+				document.head.appendChild(style);
+			}
+		})();
 	</script>
 
 	{{{if useCustomHTML}}}

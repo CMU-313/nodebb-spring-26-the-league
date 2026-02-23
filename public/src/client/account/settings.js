@@ -37,12 +37,21 @@ define('forum/account/settings', [
 		});
 
 		$('#bootswatchSkin').on('change', function () {
-			reskin($(this).val());
+			const skinValue = $(this).val();
+			toggleCustomSkinColors(skinValue);
+			reskin(skinValue);
 		});
 
 		$('[data-property="homePageRoute"]').on('change', toggleCustomRoute);
 
 		toggleCustomRoute();
+		initCustomSkinColorPickers();
+		toggleCustomSkinColors($('#bootswatchSkin').val());
+		
+		// Apply colors on page load if custom skin is active
+		if ($('#bootswatchSkin').val() === 'custom') {
+			setTimeout(applyCustomColors, 100);
+		}
 
 		components.get('user/sessions').find('.timeago').timeago();
 
@@ -114,6 +123,134 @@ define('forum/account/settings', [
 		}
 	}
 
+	function toggleCustomSkinColors(skinValue) {
+		// Check if "custom" skin is selected (slugified value)
+		const customSkinValue = 'custom';
+		if (skinValue === customSkinValue) {
+			$('#custom-skin-colors').show();
+		} else {
+			$('#custom-skin-colors').hide();
+		}
+	}
+
+	function initCustomSkinColorPickers() {
+		const primaryColorPicker = $('#custom-primary-color');
+		const primaryColorText = $('#custom-primary-color-text');
+		const secondaryColorPicker = $('#custom-secondary-color');
+		const secondaryColorText = $('#custom-secondary-color-text');
+
+		if (!primaryColorPicker.length) {
+			return;
+		}
+
+		// Sync color picker with text input
+		primaryColorPicker.on('input', function () {
+			const color = $(this).val();
+			primaryColorText.val(color);
+			applyCustomColors();
+		});
+
+		secondaryColorPicker.on('input', function () {
+			const color = $(this).val();
+			secondaryColorText.val(color);
+			applyCustomColors();
+		});
+
+		// Sync text input with color picker
+		primaryColorText.on('input', function () {
+			const color = $(this).val();
+			if (isValidColor(color)) {
+				primaryColorPicker.val(color);
+				applyCustomColors();
+			}
+		});
+
+		secondaryColorText.on('input', function () {
+			const color = $(this).val();
+			if (isValidColor(color)) {
+				secondaryColorPicker.val(color);
+				applyCustomColors();
+			}
+		});
+
+		// Initialize text inputs from color pickers
+		if (primaryColorPicker.val()) {
+			primaryColorText.val(primaryColorPicker.val());
+		}
+		if (secondaryColorPicker.val()) {
+			secondaryColorText.val(secondaryColorPicker.val());
+		}
+
+		// Apply colors if custom skin is active
+		if ($('#bootswatchSkin').val() === 'custom') {
+			applyCustomColors();
+		}
+	}
+
+	function applyCustomColors() {
+		// Get colors from settings page inputs or from saved settings
+		let primaryColor = $('#custom-primary-color').length ? $('#custom-primary-color').val() : null;
+		let secondaryColor = $('#custom-secondary-color').length ? $('#custom-secondary-color').val() : null;
+		
+		// If not on settings page, try to get from config or make API call
+		if (!primaryColor && config.bootswatchSkin === 'custom' && app.user && app.user.uid) {
+			// Colors will be loaded from user settings when page loads
+			// For now, use defaults - they'll be updated when settings are loaded
+			primaryColor = primaryColor || '#007bff';
+			secondaryColor = secondaryColor || '#6c757d';
+		}
+
+		if (!primaryColor || !secondaryColor) {
+			return;
+		}
+
+		// Apply colors via CSS custom properties globally
+		if (!document.getElementById('custom-skin-styles')) {
+			const style = document.createElement('style');
+			style.id = 'custom-skin-styles';
+			document.head.appendChild(style);
+		}
+
+		const styleEl = document.getElementById('custom-skin-styles');
+		styleEl.textContent = `
+			.skin-custom {
+				--bs-primary: ${primaryColor} !important;
+				--bs-primary-rgb: ${hexToRgb(primaryColor)} !important;
+				--bs-secondary: ${secondaryColor} !important;
+				--bs-secondary-rgb: ${hexToRgb(secondaryColor)} !important;
+			}
+			.skin-custom .btn-primary {
+				background-color: ${primaryColor} !important;
+				border-color: ${primaryColor} !important;
+			}
+			.skin-custom .btn-secondary {
+				background-color: ${secondaryColor} !important;
+				border-color: ${secondaryColor} !important;
+			}
+			.skin-custom .text-primary {
+				color: ${primaryColor} !important;
+			}
+			.skin-custom .text-secondary {
+				color: ${secondaryColor} !important;
+			}
+			.skin-custom .bg-primary {
+				background-color: ${primaryColor} !important;
+			}
+			.skin-custom .bg-secondary {
+				background-color: ${secondaryColor} !important;
+			}
+		`;
+	}
+
+	function hexToRgb(hex) {
+		const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+		return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '0, 0, 0';
+	}
+
+	function isValidColor(color) {
+		return /^#?[0-9A-Fa-f]{6}$/.test(color);
+	}
+
 	function reskin(skinName) {
 		const clientEl = Array.prototype.filter.call(document.querySelectorAll('link[rel="stylesheet"]'), function (el) {
 			return el.href.indexOf(config.relative_path + '/assets/client') !== -1;
@@ -156,6 +293,12 @@ define('forum/account/settings', [
 			// Update body class with proper skin name
 			$('body').removeClass(currentSkinClassName.join(' '));
 			$('body').addClass('skin-' + (skinName || 'noskin'));
+			
+			// Apply custom colors if custom skin is selected
+			if (skinName === 'custom') {
+				applyCustomColors();
+			}
+			
 			hooks.fire('action:skin.change', { skin: skinName, currentSkin });
 		};
 
