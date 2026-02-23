@@ -47,7 +47,7 @@ define('forum/account/settings', [
 		toggleCustomRoute();
 		initCustomSkinColorPickers();
 		toggleCustomSkinColors($('#bootswatchSkin').val());
-		
+
 		// Apply colors on page load if custom skin is active
 		if ($('#bootswatchSkin').val() === 'custom') {
 			setTimeout(applyCustomColors, 100);
@@ -133,122 +133,166 @@ define('forum/account/settings', [
 		}
 	}
 
-	function initCustomSkinColorPickers() {
-		const primaryColorPicker = $('#custom-primary-color');
-		const primaryColorText = $('#custom-primary-color-text');
-		const secondaryColorPicker = $('#custom-secondary-color');
-		const secondaryColorText = $('#custom-secondary-color-text');
+	const customColorKeys = [
+		'customThemeColor_headerBg', 'customThemeColor_headerText',
+		'customThemeColor_bodyBg', 'customThemeColor_bodyText',
+		'customThemeColor_linkColor',
+		'customThemeColor_buttonBg', 'customThemeColor_buttonText',
+	];
 
-		if (!primaryColorPicker.length) {
+	function initCustomSkinColorPickers() {
+		if (!$('#customThemeColor_headerBg').length) {
 			return;
 		}
 
-		// Sync color picker with text input
-		primaryColorPicker.on('input', function () {
-			const color = $(this).val();
-			primaryColorText.val(color);
-			applyCustomColors();
-		});
+		customColorKeys.forEach(function (key) {
+			const picker = $('#' + key + '_picker');
+			const textInput = $('#' + key);
 
-		secondaryColorPicker.on('input', function () {
-			const color = $(this).val();
-			secondaryColorText.val(color);
-			applyCustomColors();
-		});
-
-		// Sync text input with color picker
-		primaryColorText.on('input', function () {
-			const color = $(this).val();
-			if (isValidColor(color)) {
-				primaryColorPicker.val(color);
+			picker.on('input change', function () {
+				textInput.val($(this).val());
 				applyCustomColors();
-			}
+			});
+
+			textInput.on('input change', function () {
+				const val = $(this).val();
+				if (isValidColor(val)) {
+					picker.val(val);
+					applyCustomColors();
+				}
+			});
 		});
 
-		secondaryColorText.on('input', function () {
-			const color = $(this).val();
-			if (isValidColor(color)) {
-				secondaryColorPicker.val(color);
-				applyCustomColors();
-			}
+		$('#resetCustomColors').on('click', function () {
+			customColorKeys.forEach(function (key) {
+				$('#' + key).val('');
+				$('#' + key + '_picker').val('#ffffff');
+			});
+			removeCustomColors();
 		});
 
-		// Initialize text inputs from color pickers
-		if (primaryColorPicker.val()) {
-			primaryColorText.val(primaryColorPicker.val());
-		}
-		if (secondaryColorPicker.val()) {
-			secondaryColorText.val(secondaryColorPicker.val());
-		}
-
-		// Apply colors if custom skin is active
 		if ($('#bootswatchSkin').val() === 'custom') {
 			applyCustomColors();
 		}
 	}
 
 	function applyCustomColors() {
-		// Get colors from settings page inputs or from saved settings
-		let primaryColor = $('#custom-primary-color').length ? $('#custom-primary-color').val() : null;
-		let secondaryColor = $('#custom-secondary-color').length ? $('#custom-secondary-color').val() : null;
-		
-		// If not on settings page, try to get from config or make API call
-		if (!primaryColor && config.bootswatchSkin === 'custom' && app.user && app.user.uid) {
-			// Colors will be loaded from user settings when page loads
-			// For now, use defaults - they'll be updated when settings are loaded
-			primaryColor = primaryColor || '#007bff';
-			secondaryColor = secondaryColor || '#6c757d';
-		}
+		const colors = {};
+		let hasAny = false;
 
-		if (!primaryColor || !secondaryColor) {
+		customColorKeys.forEach(function (key) {
+			const el = $('#' + key);
+			let val = el.length ? el.val() : '';
+			if (!val && config[key]) {
+				val = config[key];
+			}
+			if (val && isValidColor(val)) {
+				colors[key] = val;
+				hasAny = true;
+			}
+		});
+
+		if (!hasAny) {
+			removeCustomColors();
 			return;
 		}
 
-		// Apply colors via CSS custom properties globally
-		if (!document.getElementById('custom-skin-styles')) {
-			const style = document.createElement('style');
-			style.id = 'custom-skin-styles';
-			document.head.appendChild(style);
+		const root = document.documentElement;
+		let css = '';
+
+		if (colors.customThemeColor_bodyBg) {
+			root.style.setProperty('--bs-body-bg', colors.customThemeColor_bodyBg, 'important');
+			root.style.setProperty('--bs-body-bg-rgb', hexToRgb(colors.customThemeColor_bodyBg));
+		}
+		if (colors.customThemeColor_bodyText) {
+			root.style.setProperty('--bs-body-color', colors.customThemeColor_bodyText, 'important');
+			root.style.setProperty('--bs-body-color-rgb', hexToRgb(colors.customThemeColor_bodyText));
+		}
+		if (colors.customThemeColor_linkColor) {
+			root.style.setProperty('--bs-link-color', colors.customThemeColor_linkColor, 'important');
+			root.style.setProperty('--bs-link-color-rgb', hexToRgb(colors.customThemeColor_linkColor));
+			css += '.skin-custom a { color: ' + colors.customThemeColor_linkColor + ' !important; }\n';
+		}
+		if (colors.customThemeColor_headerBg || colors.customThemeColor_headerText) {
+			css += '.skin-custom .sidebar-left, .skin-custom .sidebar-right, .skin-custom .brand-container {';
+			if (colors.customThemeColor_headerBg) {
+				css += ' background-color: ' + colors.customThemeColor_headerBg + ' !important;';
+			}
+			if (colors.customThemeColor_headerText) {
+				css += ' color: ' + colors.customThemeColor_headerText + ' !important;';
+			}
+			css += ' }\n';
+			if (colors.customThemeColor_headerText) {
+				css += '.skin-custom .sidebar-left a, .skin-custom .sidebar-left .nav-link,';
+				css += ' .skin-custom .sidebar-right a, .skin-custom .sidebar-right .nav-link,';
+				css += ' .skin-custom .brand-container a';
+				css += ' { color: ' + colors.customThemeColor_headerText + ' !important; }\n';
+			}
+			if (colors.customThemeColor_headerBg) {
+				css += '.skin-custom .sidebar-left .nav-link:hover, .skin-custom .sidebar-right .nav-link:hover { background-color: rgba(255,255,255,0.1) !important; }\n';
+			}
+		}
+		if (colors.customThemeColor_buttonBg || colors.customThemeColor_buttonText) {
+			const bg = colors.customThemeColor_buttonBg;
+			const txt = colors.customThemeColor_buttonText;
+			css += '.skin-custom .btn-primary {';
+			if (bg) {
+				css += ' background-color: ' + bg + ' !important; border-color: ' + bg + ' !important;';
+				root.style.setProperty('--bs-primary', bg, 'important');
+				root.style.setProperty('--bs-primary-rgb', hexToRgb(bg));
+			}
+			if (txt) { css += ' color: ' + txt + ' !important;'; }
+			css += ' }\n';
+			if (bg) {
+				const dark = shadeColor(bg, -20);
+				const light = shadeColor(bg, 40);
+				css += '.skin-custom .btn-primary:hover, .skin-custom .btn-primary:focus, .skin-custom .btn-primary:active { background-color: ' + dark + ' !important; border-color: ' + dark + ' !important; }\n';
+				css += '.skin-custom .btn-outline-primary { color: ' + bg + ' !important; border-color: ' + bg + ' !important; }\n';
+				css += '.skin-custom .btn-outline-primary:hover { background-color: ' + bg + ' !important; color: #fff !important; }\n';
+				css += '.skin-custom .nav-link.active { color: ' + bg + ' !important; }\n';
+				css += '.skin-custom .nav-pills .nav-link.active { background-color: ' + bg + ' !important; color: #fff !important; }\n';
+				css += '.skin-custom .page-item.active .page-link { background-color: ' + bg + ' !important; border-color: ' + bg + ' !important; color: #fff !important; }\n';
+				css += '.skin-custom .form-check-input:checked { background-color: ' + bg + ' !important; border-color: ' + bg + ' !important; }\n';
+				css += '.skin-custom .form-control:focus, .skin-custom .form-select:focus { border-color: ' + light + ' !important; box-shadow: 0 0 0 0.25rem rgba(' + hexToRgb(bg) + ', 0.25) !important; }\n';
+				css += '.skin-custom .badge.bg-primary { background-color: ' + bg + ' !important; }\n';
+				css += '.skin-custom .list-group-item.active { background-color: ' + bg + ' !important; border-color: ' + bg + ' !important; }\n';
+				css += '.skin-custom .dropdown-item.active, .skin-custom .dropdown-item:active { background-color: ' + bg + ' !important; }\n';
+				css += '.skin-custom .progress-bar { background-color: ' + bg + ' !important; }\n';
+			}
 		}
 
-		const styleEl = document.getElementById('custom-skin-styles');
-		styleEl.textContent = `
-			.skin-custom {
-				--bs-primary: ${primaryColor} !important;
-				--bs-primary-rgb: ${hexToRgb(primaryColor)} !important;
-				--bs-secondary: ${secondaryColor} !important;
-				--bs-secondary-rgb: ${hexToRgb(secondaryColor)} !important;
-			}
-			.skin-custom .btn-primary {
-				background-color: ${primaryColor} !important;
-				border-color: ${primaryColor} !important;
-			}
-			.skin-custom .btn-secondary {
-				background-color: ${secondaryColor} !important;
-				border-color: ${secondaryColor} !important;
-			}
-			.skin-custom .text-primary {
-				color: ${primaryColor} !important;
-			}
-			.skin-custom .text-secondary {
-				color: ${secondaryColor} !important;
-			}
-			.skin-custom .bg-primary {
-				background-color: ${primaryColor} !important;
-			}
-			.skin-custom .bg-secondary {
-				background-color: ${secondaryColor} !important;
-			}
-		`;
+		$('#customThemeOverrides').remove();
+		if (css) {
+			$('<style id="customThemeOverrides">' + css + '</style>').appendTo('head');
+		}
+	}
+
+	function removeCustomColors() {
+		const root = document.documentElement;
+		['--bs-body-bg', '--bs-body-bg-rgb', '--bs-body-color', '--bs-body-color-rgb',
+			'--bs-link-color', '--bs-link-color-rgb', '--bs-primary', '--bs-primary-rgb',
+		].forEach(function (prop) { root.style.removeProperty(prop); });
+		$('#customThemeOverrides').remove();
+	}
+
+	function shadeColor(hex, percent) {
+		hex = hex.replace('#', '');
+		let r = parseInt(hex.substring(0, 2), 16) + Math.round(2.55 * percent);
+		let g = parseInt(hex.substring(2, 4), 16) + Math.round(2.55 * percent);
+		let b = parseInt(hex.substring(4, 6), 16) + Math.round(2.55 * percent);
+		r = Math.min(255, Math.max(0, r));
+		g = Math.min(255, Math.max(0, g));
+		b = Math.min(255, Math.max(0, b));
+		return '#' + ('0' + r.toString(16)).slice(-2) + ('0' + g.toString(16)).slice(-2) + ('0' + b.toString(16)).slice(-2);
 	}
 
 	function hexToRgb(hex) {
 		const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-		return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '0, 0, 0';
+		return result ? parseInt(result[1], 16) + ', ' + parseInt(result[2], 16) + ', ' + parseInt(result[3], 16) : '0, 0, 0';
 	}
 
 	function isValidColor(color) {
-		return /^#?[0-9A-Fa-f]{6}$/.test(color);
+		return /^#[0-9A-Fa-f]{6}$/.test(color);
 	}
 
 	function reskin(skinName) {
@@ -264,6 +308,9 @@ define('forum/account/settings', [
 		} else if (skinName === 'noskin') {
 			skinName = '';
 		}
+
+		// 'custom' skin uses default CSS with color overrides applied separately
+		const cssSkinName = skinName === 'custom' ? '' : skinName;
 
 		const currentSkinClassName = $('body').attr('class').split(/\s+/).filter(function (className) {
 			return className.startsWith('skin-');
@@ -284,7 +331,7 @@ define('forum/account/settings', [
 		linkEl.rel = 'stylesheet';
 		linkEl.type = 'text/css';
 		linkEl.href = config.relative_path +
-			'/assets/client' + (skinName ? '-' + skinName : '') +
+			'/assets/client' + (cssSkinName ? '-' + cssSkinName : '') +
 			(langDir === 'rtl' ? '-rtl' : '') +
 			'.css?' + config['cache-buster'];
 		linkEl.onload = function () {
@@ -293,12 +340,12 @@ define('forum/account/settings', [
 			// Update body class with proper skin name
 			$('body').removeClass(currentSkinClassName.join(' '));
 			$('body').addClass('skin-' + (skinName || 'noskin'));
-			
+
 			// Apply custom colors if custom skin is selected
 			if (skinName === 'custom') {
 				applyCustomColors();
 			}
-			
+
 			hooks.fire('action:skin.change', { skin: skinName, currentSkin });
 		};
 

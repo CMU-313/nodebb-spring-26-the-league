@@ -183,3 +183,17 @@ get:
                 properties:
                   probe:
                     type: number
+              customThemeColor_headerBg:
+                type: string
+              customThemeColor_headerText:
+                type: string
+              customThemeColor_bodyBg:
+                type: string
+              customThemeColor_bodyText:
+                type: string
+              customThemeColor_linkColor:
+                type: string
+              customThemeColor_buttonBg:
+                type: string
+              customThemeColor_buttonText:
+                type: string

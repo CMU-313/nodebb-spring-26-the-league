@@ -134,10 +134,24 @@ apiController.loadConfig = async function (req) {
 	if (!config.disableCustomUserSkins && settings.bootswatchSkin) {
 		if (settings.bootswatchSkin === 'noskin') {
 			config.bootswatchSkin = '';
+		} else if (settings.bootswatchSkin === 'custom') {
+			config.bootswatchSkin = 'custom';
 		} else if (settings.bootswatchSkin !== '' && await meta.css.isSkinValid(settings.bootswatchSkin)) {
 			config.bootswatchSkin = settings.bootswatchSkin;
 		}
 	}
+
+	// Pass custom theme color settings to client config
+	const customThemeColorKeys = [
+		'customThemeColor_headerBg', 'customThemeColor_headerText',
+		'customThemeColor_bodyBg', 'customThemeColor_bodyText',
+		'customThemeColor_linkColor',
+		'customThemeColor_buttonBg', 'customThemeColor_buttonText',
+	];
+	customThemeColorKeys.forEach((key) => {
+		config[key] = settings[key] || '';
+	});
+
 
 	// Overrides based on privilege
 	config.disableChatMessageEditing = isAdminOrGlobalMod ? false : config.disableChatMessageEditing;

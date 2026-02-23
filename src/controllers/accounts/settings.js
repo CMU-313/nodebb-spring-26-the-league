@@ -235,6 +235,7 @@ async function getSkinOptions(userData) {
 	const bootswatchSkinOptions = [
 		{ name: '[[user:no-skin]]', value: 'noskin' },
 		{ name: `[[user:default, ${defaultSkin}]]`, value: '' },
+		{ name: '[[user:custom-skin-colors]]', value: 'custom' },
 	];
 	const customSkins = await meta.settings.get('custom-skins');
 	if (customSkins && Array.isArray(customSkins['custom-skin-list'])) {
