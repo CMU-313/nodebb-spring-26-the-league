@@ -231,10 +231,9 @@ async function getHomePageRoutes(userData) {
 }
 
 async function getSkinOptions(userData) {
-	const defaultSkin = _.capitalize(meta.config.bootswatchSkin) || '[[user:no-skin]]';
 	const bootswatchSkinOptions = [
 		{ name: '[[user:no-skin]]', value: 'noskin' },
-		{ name: `[[user:default, ${defaultSkin}]]`, value: '' },
+		{ name: 'Default', value: '' },
 	];
 	const customSkins = await meta.settings.get('custom-skins');
 	if (customSkins && Array.isArray(customSkins['custom-skin-list'])) {
