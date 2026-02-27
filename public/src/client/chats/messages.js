@@ -273,6 +273,9 @@ define('forum/chats/messages', [
 
 		socket.removeListener('event:chats.restore', onChatMessageRestored);
 		socket.on('event:chats.restore', onChatMessageRestored);
+
+		socket.removeListener('event:chats.reaction', messages.onReactionUpdate);
+		socket.on('event:chats.reaction', messages.onReactionUpdate);
 	};
 
 	function onChatMessageEdited(data) {
@@ -591,6 +594,83 @@ define('forum/chats/messages', [
 			console.error('Forward error:', err);
 		}
 	};
+
+	// Reactions
+	messages.initReactionHandlers = function () {
+		const chatContent = $('[component="chat/messages"]');
+
+		// 1. Handle "Add Reaction" (+ Smiley Button)
+		chatContent.on('click', '.reaction-add-btn', function (e) {
+			e.preventDefault();
+			const mid = $(this).attr('data-mid');
+			const targetElement = this;
+
+			// Dynamically load the NodeBB Emoji Dialog module
+			require(['emoji-dialog'], function (emojiDialog) {
+				emojiDialog.toggle(targetElement, function (selectedEmoji) {
+					const emojiEl = $(selectedEmoji.target).closest('.emoji-link').find('img');
+					const emoji = emojiEl.attr('alt');
+					messages.toggleReaction(mid, emoji);
+				});
+			});
+		});
+
+		// 2. Handle Clicking an existing Reaction Pill (Toggle +1/-1)
+		chatContent.on('click', '.reaction-pill', function (e) {
+			e.preventDefault();
+			const mid = $(this).attr('data-mid');
+			const emojiStr = $(this).attr('data-emoji');
+			messages.toggleReaction(mid, emojiStr);
+		});
+	};
+
+	/**
+	 * Send the toggle request to the backend 
+	 */
+	messages.toggleReaction = function (mid, emoji) {
+		const roomId = ajaxify.data.roomId;
+		api.post(`/chats/${roomId}/messages/${mid}/reactions`, { emoji }).catch(err => alerts.error(err));
+	};
+
+
+	/**
+	 * Update the UI when the backend says reactions changed
+	 */
+	messages.onReactionUpdate = function (data) {
+		// data = { mid: 123, reactions: [ {emoji: ':smile:', count: 2, self: true}, ... ] }
+		const msgEl = components.get('chat/message', data.mid);
+		if (!msgEl.length) return;
+
+		const container = msgEl.find('.chat-reactions');
+		
+		// Remove old pills (keep the add button)
+		container.find('.reaction-pill').remove();
+
+		const addButton = container.find('.reaction-add-btn');
+
+		// Loop through reactions and create HTML
+		data.reactions.forEach(function (r) {
+			if (r.count > 0) {
+				const isReacted = r.self ? 'reacted' : '';
+				const html = `
+					<button class="reaction-pill ${isReacted}" data-mid="${data.mid}" data-emoji="${r.emoji}">
+						<span class="emoji-content">${r.emoji}</span>
+						<span class="count">${r.count}</span>
+					</button>
+				`;
+				// Insert before the smiley button
+				addButton.before(html);
+			}
+		});
+
+		// Parse the emojis (turn :smile: text into images)
+		app.parseAndTranslate(container);
+	};
+
+	// Initialize handlers
+	hooks.on('action:chat.loaded', function () {
+		messages.initReactionHandlers();
+	});
 
 	return messages;
 });

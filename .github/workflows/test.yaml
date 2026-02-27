@@ -13,7 +13,6 @@ on:
       - master
       - develop
       - 'dev-*'
-
 defaults:
   run:
     shell: bash

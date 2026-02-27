@@ -115,6 +115,8 @@ module.exports = function (Messaging) {
 
 		await addParentMessages(messages, uid, roomId);
 		await addForwardedMessages(messages, uid, roomId);
+		await addReactions(messages, uid, roomId);
+		
 
 		const data = await plugins.hooks.fire('filter:messaging.getMessages', {
 			messages: messages,
@@ -126,6 +128,8 @@ module.exports = function (Messaging) {
 
 		return data && data.messages;
 	};
+
+	
 
 	async function addParentMessages(messages, uid, roomId) {
 		let parentMids = messages.map(msg => (msg && msg.hasOwnProperty('toMid') ? parseInt(msg.toMid, 10) : null)).filter(Boolean);
@@ -231,6 +235,14 @@ module.exports = function (Messaging) {
 				}
 			}
 		});
+	}
+
+	async function addReactions(messages, uid, roomId) {
+		await Promise.all(messages.map(async (msg) => {
+			if (msg && msg.messageId) {
+				msg.reactions = await Messaging.getReactions(msg.messageId, roomId, uid);
+			}
+		}));
 	}
 
 	async function parseMessages(messages, uid, roomId, isNew) {

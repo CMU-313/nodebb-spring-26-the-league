@@ -215,3 +215,14 @@ Chats.messages.unpin = async (req, res) => {
 
 	helpers.formatApiResponse(200, res);
 };
+
+Chats.messages.getReactions = async (req, res) => {
+	const { mid, roomId } = req.params;
+	helpers.formatApiResponse(200, res, await api.chats.getReactions(req, { mid, roomId }));
+};
+
+Chats.messages.toggleReaction = async (req, res) => {
+	const { mid, roomId } = req.params;
+	const { emoji } = req.body;
+	helpers.formatApiResponse(200, res, await api.chats.toggleReaction(req, { mid, roomId, emoji }));
+};
