@@ -37,10 +37,34 @@
 		<div component="chat/message/body" class="message-body ps-0 py-0 overflow-auto text-break">
 			{messages.content}
 		</div>
-		<!-- IMPORT partials/chats/reactions.tpl -->
+		
+		<!-- Reactions (Inline) --> 
+		<div class="chat-reactions">
+			{{{ each messages.reactions }}}
+			{{{ if count }}}
+			<button class="reaction-pill {{{ if self }}}reacted{{{ end }}}"
+					data-mid="{../messages.messageId}"
+					data-emoji="{emoji}"
+					title="{emoji}">
+				<span class="emoji-content">{emoji}</span>
+				<span class="count">{count}</span>
+			</button>
+			{{{ end }}}
+			{{{ end }}}
+
+			<!-- Add Reaction Button -->
+			<button class="btn btn-sm btn-link reaction-add-btn"
+					data-mid="{messages.messageId}"
+					title="Add reaction">
+				<i class="fa fa-smile-o"></i>
+			</button>
+		</div>
+			
+	
+		<!-- End Reactions -->
+		
 		<div component="chat/message/controls" class="position-relative">
 			<div class="btn-group border shadow-sm controls position-absolute bg-body end-0" style="bottom:1rem;">
-				<!-- IMPORT partials/chats/add-reaction.tpl -->
 				<button class="btn btn-sm btn-link" data-action="reply" title="[[topic:reply]]"><i class="fa fa-reply"></i></button>
 				<button class="btn btn-sm btn-link" data-action="forward" title="[[topic:forward]]"><i class="fa fa-share"></i></button>
 
@@ -79,11 +103,11 @@
 						{{{ end }}}
 
 						<li>
-							<a href="#" class="dropdown-item rounded-1" data-action="copy-text" data-mid="{messages.mid}" role="menuitem"><span class="d-inline-flex align-items-center gap-2"><i class="fa fa-fw fa-copy text-muted"></i> [[modules:chat.copy-text]]</span></a>
+							<a href="#" class="dropdown-item rounded-1" data-action="copy-text" data-mid="{messages.messageId}" role="menuitem"><span class="d-inline-flex align-items-center gap-2"><i class="fa fa-fw fa-copy text-muted"></i> [[modules:chat.copy-text]]</span></a>
 						</li>
 
 						<li>
-							<a href="#" class="dropdown-item rounded-1" data-action="copy-link" data-mid="{messages.mid}" role="menuitem"><span class="d-inline-flex align-items-center gap-2"><i class="fa fa-fw fa-link text-muted"></i> [[modules:chat.copy-link]]</span></a>
+							<a href="#" class="dropdown-item rounded-1" data-action="copy-link" data-mid="{messages.messageId}" role="menuitem"><span class="d-inline-flex align-items-center gap-2"><i class="fa fa-fw fa-link text-muted"></i> [[modules:chat.copy-link]]</span></a>
 						</li>
 					</ul>
 				</div>
