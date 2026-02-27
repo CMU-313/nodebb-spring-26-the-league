@@ -611,9 +611,9 @@ define('forum/chats/messages', [
 					const emojiEl = $(selectedEmoji.target).closest('.emoji-link').find('img');
 					const emoji = emojiEl.attr('alt');
 					messages.toggleReaction(mid, emoji);
+				});
 			});
 		});
-	});
 
 		// 2. Handle Clicking an existing Reaction Pill (Toggle +1/-1)
 		chatContent.on('click', '.reaction-pill', function (e) {
@@ -629,8 +629,7 @@ define('forum/chats/messages', [
 	 */
 	messages.toggleReaction = function (mid, emoji) {
 		const roomId = ajaxify.data.roomId;
-    	api.post(`/chats/${roomId}/messages/${mid}/reactions`, { emoji })
-        	.catch(err => alerts.error(err));
+		api.post(`/chats/${roomId}/messages/${mid}/reactions`, { emoji }).catch(err => alerts.error(err));
 	};
 
 
