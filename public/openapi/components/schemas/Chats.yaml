@@ -141,6 +141,21 @@ MessageObject:
       $ref: '#/MessageObject'
       nullable: true
       description: The full message object of the forwarded message, populated when forwardMid is present
+    reactions:
+      type: array
+      description: List of emoji reactions on this message
+      items:
+        type: object
+        properties:
+          emoji:
+            type: string
+            description: The emoji character
+          count:
+            type: number
+            description: Number of users who reacted with this emoji
+          self:
+            type: boolean
+            description: Whether the current user has reacted with this emoji
 RoomUserList:
   type: object
   properties:
