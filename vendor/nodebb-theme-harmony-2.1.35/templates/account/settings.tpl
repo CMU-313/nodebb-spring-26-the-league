@@ -14,6 +14,74 @@
 			{{{end}}}
 		</select>
 
+		<div id="custom-skin-colors" class="mt-3" style="display: none;">
+			<label class="form-label fw-bold">[[user:custom-skin-colors]]</label>
+			<p class="form-text text-xs mb-2">[[user:custom-skin-colors-help]]</p>
+
+			<div class="row g-2 mb-2">
+				<div class="col-6">
+					<label class="form-label text-xs" for="customThemeColor_headerBg">[[user:header-bg-color]]</label>
+					<div class="input-group input-group-sm">
+						<input type="color" class="form-control form-control-color form-control-sm" id="customThemeColor_headerBg_picker" value="{{{ if settings.customThemeColor_headerBg }}}{settings.customThemeColor_headerBg}{{{ else }}}#ffffff{{{ end }}}"/>
+						<input type="text" class="form-control form-control-sm" id="customThemeColor_headerBg" data-property="customThemeColor_headerBg" value="{settings.customThemeColor_headerBg}" placeholder="#RRGGBB"/>
+					</div>
+				</div>
+				<div class="col-6">
+					<label class="form-label text-xs" for="customThemeColor_headerText">[[user:header-text-color]]</label>
+					<div class="input-group input-group-sm">
+						<input type="color" class="form-control form-control-color form-control-sm" id="customThemeColor_headerText_picker" value="{{{ if settings.customThemeColor_headerText }}}{settings.customThemeColor_headerText}{{{ else }}}#ffffff{{{ end }}}"/>
+						<input type="text" class="form-control form-control-sm" id="customThemeColor_headerText" data-property="customThemeColor_headerText" value="{settings.customThemeColor_headerText}" placeholder="#RRGGBB"/>
+					</div>
+				</div>
+			</div>
+
+			<div class="row g-2 mb-2">
+				<div class="col-6">
+					<label class="form-label text-xs" for="customThemeColor_bodyBg">[[user:body-bg-color]]</label>
+					<div class="input-group input-group-sm">
+						<input type="color" class="form-control form-control-color form-control-sm" id="customThemeColor_bodyBg_picker" value="{{{ if settings.customThemeColor_bodyBg }}}{settings.customThemeColor_bodyBg}{{{ else }}}#ffffff{{{ end }}}"/>
+						<input type="text" class="form-control form-control-sm" id="customThemeColor_bodyBg" data-property="customThemeColor_bodyBg" value="{settings.customThemeColor_bodyBg}" placeholder="#RRGGBB"/>
+					</div>
+				</div>
+				<div class="col-6">
+					<label class="form-label text-xs" for="customThemeColor_bodyText">[[user:body-text-color]]</label>
+					<div class="input-group input-group-sm">
+						<input type="color" class="form-control form-control-color form-control-sm" id="customThemeColor_bodyText_picker" value="{{{ if settings.customThemeColor_bodyText }}}{settings.customThemeColor_bodyText}{{{ else }}}#000000{{{ end }}}"/>
+						<input type="text" class="form-control form-control-sm" id="customThemeColor_bodyText" data-property="customThemeColor_bodyText" value="{settings.customThemeColor_bodyText}" placeholder="#RRGGBB"/>
+					</div>
+				</div>
+			</div>
+
+			<div class="row g-2 mb-2">
+				<div class="col-6">
+					<label class="form-label text-xs" for="customThemeColor_linkColor">[[user:link-color]]</label>
+					<div class="input-group input-group-sm">
+						<input type="color" class="form-control form-control-color form-control-sm" id="customThemeColor_linkColor_picker" value="{{{ if settings.customThemeColor_linkColor }}}{settings.customThemeColor_linkColor}{{{ else }}}#007bff{{{ end }}}"/>
+						<input type="text" class="form-control form-control-sm" id="customThemeColor_linkColor" data-property="customThemeColor_linkColor" value="{settings.customThemeColor_linkColor}" placeholder="#RRGGBB"/>
+					</div>
+				</div>
+			</div>
+
+			<div class="row g-2 mb-2">
+				<div class="col-6">
+					<label class="form-label text-xs" for="customThemeColor_buttonBg">[[user:button-bg-color]]</label>
+					<div class="input-group input-group-sm">
+						<input type="color" class="form-control form-control-color form-control-sm" id="customThemeColor_buttonBg_picker" value="{{{ if settings.customThemeColor_buttonBg }}}{settings.customThemeColor_buttonBg}{{{ else }}}#007bff{{{ end }}}"/>
+						<input type="text" class="form-control form-control-sm" id="customThemeColor_buttonBg" data-property="customThemeColor_buttonBg" value="{settings.customThemeColor_buttonBg}" placeholder="#RRGGBB"/>
+					</div>
+				</div>
+				<div class="col-6">
+					<label class="form-label text-xs" for="customThemeColor_buttonText">[[user:button-text-color]]</label>
+					<div class="input-group input-group-sm">
+						<input type="color" class="form-control form-control-color form-control-sm" id="customThemeColor_buttonText_picker" value="{{{ if settings.customThemeColor_buttonText }}}{settings.customThemeColor_buttonText}{{{ else }}}#ffffff{{{ end }}}"/>
+						<input type="text" class="form-control form-control-sm" id="customThemeColor_buttonText" data-property="customThemeColor_buttonText" value="{settings.customThemeColor_buttonText}" placeholder="#RRGGBB"/>
+					</div>
+				</div>
+			</div>
+
+			<button type="button" id="resetCustomColors" class="btn btn-sm btn-outline-secondary mt-1">[[user:reset-colors]]</button>
+		</div>
+
 		<hr/>
 		{{{ end }}}
 

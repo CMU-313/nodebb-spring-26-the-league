@@ -144,6 +144,27 @@ Settings:
     uid:
       type: number
       description: A user identifier
+    customThemeColor_headerBg:
+      type: string
+      description: Custom theme color for header background
+    customThemeColor_headerText:
+      type: string
+      description: Custom theme color for header text
+    customThemeColor_bodyBg:
+      type: string
+      description: Custom theme color for body background
+    customThemeColor_bodyText:
+      type: string
+      description: Custom theme color for body text
+    customThemeColor_linkColor:
+      type: string
+      description: Custom theme color for links
+    customThemeColor_buttonBg:
+      type: string
+      description: Custom theme color for button background
+    customThemeColor_buttonText:
+      type: string
+      description: Custom theme color for button text
   required:
     - showemail
     - usePagination
