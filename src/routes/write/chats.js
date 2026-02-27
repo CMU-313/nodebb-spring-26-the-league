@@ -50,5 +50,8 @@ module.exports = function () {
 	setupApiRoute(router, 'put', '/:roomId/messages/:mid/pin', [...middlewares, middleware.assert.room, middleware.assert.message], controllers.write.chats.messages.pin);
 	setupApiRoute(router, 'delete', '/:roomId/messages/:mid/pin', [...middlewares, middleware.assert.room, middleware.assert.message], controllers.write.chats.messages.unpin);
 
+	setupApiRoute(router, 'get', '/:roomId/messages/:mid/reactions', [...middlewares, middleware.assert.room, middleware.assert.message], controllers.write.chats.messages.getReactions);
+	setupApiRoute(router, 'post', '/:roomId/messages/:mid/reactions', [...middlewares, middleware.assert.room, middleware.assert.message, middleware.checkRequired.bind(null, ['emoji'])], controllers.write.chats.messages.toggleReaction);
+	
 	return router;
 };

@@ -442,3 +442,36 @@ chatsAPI.unpinMessage = async (caller, { roomId, mid }) => {
 	await messaging.canPin(roomId, caller.uid);
 	await messaging.unpinMessage(mid, roomId);
 };
+
+
+chatsAPI.getReactions = async (caller, { roomId, mid }) => {
+	const isInRoom = await messaging.isUserInRoom(caller.uid, roomId);
+	if (!isInRoom) {
+		throw new Error('[[error:no-privileges]]');
+	}
+	const reactions = await messaging.getReactions(mid, roomId, caller.uid);
+	return { reactions };
+};
+
+chatsAPI.toggleReaction = async (caller, { roomId, mid, emoji }) => {
+	if (!emoji) {
+		throw new Error('[[error:invalid-data]]');
+	}
+	const isInRoom = await messaging.isUserInRoom(caller.uid, roomId);
+	if (!isInRoom) {
+		throw new Error('[[error:no-privileges]]');
+	}
+	const result = await messaging.toggleReaction(caller.uid, mid, roomId, emoji);
+	const reactions = await messaging.getReactions(mid, roomId, caller.uid);
+	const ioRoom = require('../socket.io').in(`chat_room_${roomId}`);
+	if (ioRoom) {
+		ioRoom.emit('event:chats.reaction', {
+			mid,
+			uid: caller.uid,
+			emoji,
+			added: result.added,
+			reactions,
+		});
+	}
+	return result;
+};
