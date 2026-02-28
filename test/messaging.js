@@ -628,8 +628,6 @@ describe('Messaging Library', () => {
 		});
 	});
 
-<<<<<<< Updated upstream
-=======
 	describe('forwardMid', () => {
 		let roomId;
 		let firstMid;
@@ -819,7 +817,6 @@ describe('Messaging Library', () => {
 		});
 	});
 
->>>>>>> Stashed changes
 	describe('edit/delete', () => {
 		const socketModules = require('../src/socket.io/modules');
 		let mid;
