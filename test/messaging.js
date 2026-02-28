@@ -628,6 +628,198 @@ describe('Messaging Library', () => {
 		});
 	});
 
+<<<<<<< Updated upstream
+=======
+	describe('forwardMid', () => {
+		let roomId;
+		let firstMid;
+		before(async () => {
+			// create room
+			const { body } = await callv3API('post', `/chats`, {
+				uids: [mocks.users.bar.uid],
+			}, 'foo');
+			roomId = body.response.roomId;
+			// send message
+			const result = await callv3API('post', `/chats/${roomId}`, {
+				roomId: roomId,
+				message: 'first chat message',
+			}, 'foo');
+
+			firstMid = result.body.response.mid;
+		});
+
+		it('should fail if forwardMid is not a number', async () => {
+			const result = await callv3API('post', `/chats/${roomId}`, {
+				roomId: roomId,
+				message: 'invalid',
+				forwardMid: 'osmaosd',
+			}, 'foo');
+			assert.strictEqual(result.body.status.message, 'Invalid Chat Message ID');
+		});
+
+		it('should forward firstMid using forwardMid', async () => {
+			const { body } = await callv3API('post', `/chats/${roomId}`, {
+				roomId: roomId,
+				message: 'forwarding message',
+				forwardMid: firstMid,
+			}, 'bar');
+			assert(body.response.mid);
+
+			// Verify retrieval
+			const { body: getBody } = await callv3API('get', `/chats/${roomId}`, {}, 'bar');
+			const messages = getBody.response.messages;
+			const forwardedMsg = messages.find(m => m.messageId === body.response.mid);
+			assert(forwardedMsg.forwardedMessage);
+			assert.equal(forwardedMsg.forwardedMessage.mid, firstMid);
+			assert.equal(forwardedMsg.forwardedMessage.content, 'first chat message');
+		});
+
+		it('should fail if forwardMid does not exist', async () => {
+			const result = await callv3API('post', `/chats/${roomId}`, {
+				roomId: roomId,
+				message: 'trying to forward non-existent message',
+				forwardMid: 99999,
+			}, 'foo');
+			assert.strictEqual(result.body.status.message, 'Invalid Chat Message ID');
+		});
+
+		it('should fail if forwardMid is null string', async () => {
+			const result = await callv3API('post', `/chats/${roomId}`, {
+				roomId: roomId,
+				message: 'invalid forward',
+				forwardMid: '',
+			}, 'foo');
+			// Should succeed without forwardMid when empty string
+			assert(result.body.response.mid);
+			// Verify no forwardMid in response
+			const { body: getBody } = await callv3API('get', `/chats/${roomId}`, {}, 'foo');
+			const messages = getBody.response.messages;
+			const msg = messages.find(m => m.messageId === result.body.response.mid);
+			assert(!msg.forwardMid || msg.forwardMid === 0);
+		});
+
+		it('should fail if forwardMid is negative', async () => {
+			const result = await callv3API('post', `/chats/${roomId}`, {
+				roomId: roomId,
+				message: 'invalid forward',
+				forwardMid: -1,
+			}, 'foo');
+			assert.strictEqual(result.body.status.message, 'Invalid Chat Message ID');
+		});
+
+		it('should forward message to different room', async () => {
+			// Create second room
+			const { body: room2Body } = await callv3API('post', `/chats`, {
+				uids: [mocks.users.baz.uid],
+			}, 'foo');
+			const roomId2 = room2Body.response.roomId;
+
+			// Forward message from first room to second room
+			const { body } = await callv3API('post', `/chats/${roomId2}`, {
+				roomId: roomId2,
+				message: 'Forwarded to different room',
+				forwardMid: firstMid,
+			}, 'foo');
+			assert(body.response.mid);
+
+			// Verify in second room
+			const { body: getBody } = await callv3API('get', `/chats/${roomId2}`, {}, 'foo');
+			const messages = getBody.response.messages;
+			const forwardedMsg = messages.find(m => m.messageId === body.response.mid);
+			assert(forwardedMsg.forwardedMessage);
+			assert.equal(forwardedMsg.forwardedMessage.mid, firstMid);
+		});
+
+		it('should not include forwardMid in response when message is not forwarded', async () => {
+			const { body } = await callv3API('post', `/chats/${roomId}`, {
+				roomId: roomId,
+				message: 'regular message without forward',
+			}, 'bar');
+			assert(body.response.mid);
+
+			// Verify retrieval - should not have forwardMid
+			const { body: getBody } = await callv3API('get', `/chats/${roomId}`, {}, 'bar');
+			const messages = getBody.response.messages;
+			const msg = messages.find(m => m.messageId === body.response.mid);
+			assert(!msg.hasOwnProperty('forwardMid') || msg.forwardMid === 0 || !msg.forwardMid);
+			assert(!msg.hasOwnProperty('forwardedMessage'));
+		});
+
+		it('should include forwardedMessage when forwardMid is present', async () => {
+			const { body } = await callv3API('post', `/chats/${roomId}`, {
+				roomId: roomId,
+				message: 'message with forward',
+				forwardMid: firstMid,
+			}, 'bar');
+			assert(body.response.mid);
+
+			// Verify retrieval - should have both forwardMid and forwardedMessage
+			const { body: getBody } = await callv3API('get', `/chats/${roomId}`, {}, 'bar');
+			const messages = getBody.response.messages;
+			const forwardedMsg = messages.find(m => m.messageId === body.response.mid);
+			assert(forwardedMsg.forwardMid);
+			assert(forwardedMsg.forwardedMessage);
+			assert.equal(forwardedMsg.forwardMid, firstMid);
+			assert.equal(forwardedMsg.forwardedMessage.mid, firstMid);
+			assert(forwardedMsg.forwardedMessage.content);
+			assert(forwardedMsg.forwardedMessage.fromUser);
+		});
+
+		it('should handle forwarding deleted message', async () => {
+			// Create and delete a message
+			const { body: deleteBody } = await callv3API('post', `/chats/${roomId}`, {
+				roomId: roomId,
+				message: 'message to be deleted',
+			}, 'foo');
+			const deleteMid = deleteBody.response.mid;
+
+			await callv3API('delete', `/chats/${roomId}/messages/${deleteMid}`, {}, 'foo');
+
+			// Try to forward deleted message
+			const result = await callv3API('post', `/chats/${roomId}`, {
+				roomId: roomId,
+				message: 'forwarding deleted message',
+				forwardMid: deleteMid,
+			}, 'bar');
+			// Should succeed but forwarded message should show as deleted
+			assert(result.body.response.mid);
+
+			const { body: getBody } = await callv3API('get', `/chats/${roomId}`, {}, 'bar');
+			const messages = getBody.response.messages;
+			const forwardedMsg = messages.find(m => m.messageId === result.body.response.mid);
+			assert(forwardedMsg.forwardedMessage);
+			// Deleted message content should be replaced
+			assert(forwardedMsg.forwardedMessage.content.includes('message-deleted') || 
+				forwardedMsg.forwardedMessage.deleted);
+		});
+
+		it('should allow forwarding message with toMid (reply)', async () => {
+			// Create a reply message
+			const { body: replyBody } = await callv3API('post', `/chats/${roomId}`, {
+				roomId: roomId,
+				message: 'reply message',
+				toMid: firstMid,
+			}, 'bar');
+			const replyMid = replyBody.response.mid;
+
+			// Forward the reply
+			const { body } = await callv3API('post', `/chats/${roomId}`, {
+				roomId: roomId,
+				message: 'forwarding a reply',
+				forwardMid: replyMid,
+			}, 'foo');
+			assert(body.response.mid);
+
+			const { body: getBody } = await callv3API('get', `/chats/${roomId}`, {}, 'foo');
+			const messages = getBody.response.messages;
+			const forwardedMsg = messages.find(m => m.messageId === body.response.mid);
+			assert(forwardedMsg.forwardedMessage);
+			assert.equal(forwardedMsg.forwardedMessage.mid, replyMid);
+			assert.equal(forwardedMsg.forwardedMessage.content, 'reply message');
+		});
+	});
+
+>>>>>>> Stashed changes
 	describe('edit/delete', () => {
 		const socketModules = require('../src/socket.io/modules');
 		let mid;
