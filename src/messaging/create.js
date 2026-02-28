@@ -50,6 +50,11 @@ module.exports = function (Messaging) {
 				throw new Error('[[error:no-privileges]]');
 			}
 		}
+		if (data.forwardMid) {
+			if (!await Messaging.messageExists(data.forwardMid)) {
+				throw new Error('[[error:invalid-mid]]');
+			}
+		}
 		const mid = data.mid || await db.incrObjectField('global', 'nextMid');
 		const timestamp = data.timestamp || Date.now();
 		let message = {
@@ -62,6 +67,9 @@ module.exports = function (Messaging) {
 		if (data.toMid) {
 			message.toMid = data.toMid;
 		}
+		if (data.forwardMid) {
+			message.forwardMid = data.forwardMid;
+		}
 		if (data.system) {
 			message.system = data.system;
 		}
@@ -70,7 +78,9 @@ module.exports = function (Messaging) {
 			message.ip = data.ip;
 		}
 
+		// TODO: Find what this does to the message object
 		message = await plugins.hooks.fire('filter:messaging.save', message);
+		// console.log('Final message object to be saved:', message);
 		await db.setObject(`message:${mid}`, message);
 		const isNewSet = await Messaging.isNewSet(uid, roomId, timestamp);
 
@@ -82,6 +92,9 @@ module.exports = function (Messaging) {
 		];
 		if (data.toMid) {
 			tasks.push(db.sortedSetAdd(`mid:${data.toMid}:replies`, timestamp, mid));
+		}
+		if (data.forwardMid) {
+			tasks.push(db.sortedSetAdd(`mid:${data.forwardMid}:forwards`, timestamp, mid));
 		}
 		if (roomData.public) {
 			tasks.push(

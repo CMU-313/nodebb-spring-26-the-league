@@ -78,3 +78,5 @@ test.sh
 dump.rdb
 .archiver_shadow/
 .snapshots/
+
+start-dev.sh

@@ -853,7 +853,45 @@ Mocks.notes.private = async ({ messageObj }) => {
 		});
 	}
 
-	let uids = await messaging.getUidsInRoom(messageObj.roomId, 0, -1);
+	if (!messageObj.roomId) {
+		return {
+			'@context': 'https://www.w3.org/ns/activitystreams',
+			id,
+			type: 'Note',
+			to: [],
+			cc: [],
+			content: messageObj.content || '',
+			attributedTo: `${nconf.get('url')}/uid/${messageObj.fromuid}`,
+		};
+	}
+
+	const roomData = await messaging.getRoomData(messageObj.roomId);
+	if (!roomData) {
+		return {
+			'@context': 'https://www.w3.org/ns/activitystreams',
+			id,
+			type: 'Note',
+			to: [],
+			cc: [],
+			content: messageObj.content || '',
+			attributedTo: `${nconf.get('url')}/uid/${messageObj.fromuid}`,
+		};
+	}
+
+	let uids;
+	try {
+		uids = await messaging.getUidsInRoom(messageObj.roomId, 0, -1);
+	} catch (err) {
+		return {
+			'@context': 'https://www.w3.org/ns/activitystreams',
+			id,
+			type: 'Note',
+			to: [],
+			cc: [],
+			content: messageObj.content || '',
+			attributedTo: `${nconf.get('url')}/uid/${messageObj.fromuid}`,
+		};
+	}
 	uids = uids.filter(uid => String(uid) !== String(messageObj.fromuid)); // no author
 	const to = new Set(uids.map(uid => (utils.isNumber(uid) ? `${nconf.get('url')}/uid/${uid}` : uid)));
 	const published = messageObj.timestampISO;

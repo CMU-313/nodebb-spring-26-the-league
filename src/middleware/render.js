@@ -102,10 +102,8 @@ module.exports = function (middleware) {
 				const str = `${results.header +
 					(res.locals.postHeader || '') +
 					results.content
-				}<script id="ajaxify-data" type="application/json">${
-					optionsString
-				}</script>${
-					res.locals.preFooter || ''
+				}<script id="ajaxify-data" type="application/json">${optionsString
+				}</script>${res.locals.preFooter || ''
 				}${results.footer}`;
 
 				if (typeof fn !== 'function') {
@@ -210,6 +208,8 @@ module.exports = function (middleware) {
 		results.user.isEmailConfirmSent = !!results.isEmailConfirmSent;
 
 		templateValues.bootswatchSkin = res.locals.config.bootswatchSkin || '';
+		// 'custom' skin uses default CSS with color overrides
+		templateValues.bootswatchCssSkin = templateValues.bootswatchSkin === 'custom' ? '' : templateValues.bootswatchSkin;
 		templateValues.browserTitle = results.browserTitle;
 		({
 			navigation: templateValues.navigation,

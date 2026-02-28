@@ -62,6 +62,23 @@ get:
                     type: array
                     items:
                       type: object
+                      required:
+                        - content
+                        - timestamp
+                        - fromuid
+                        - roomId
+                        - deleted
+                        - system
+                        - edited
+                        - timestampISO
+                        - editedISO
+                        - mid
+                        - messageId
+                        - fromUser
+                        - self
+                        - newSet
+                        - index
+                        - isOwner
                       properties:
                         content:
                           type: string
@@ -136,6 +153,28 @@ get:
                           type: number
                         isOwner:
                           type: boolean
+                        forwardMid:
+                          type: number
+                          description: The message ID of the forwarded message, if this message is a forward
+                        forwardedMessage:
+                          type: object
+                          nullable: true
+                          description: The full message object of the forwarded message, populated when forwardMid is present
+                        reactions:
+                          type: array
+                          description: List of emoji reactions on this message
+                          items:
+                            type: object
+                            properties:
+                              emoji:
+                                type: string
+                                description: The emoji character
+                              count:
+                                type: number
+                                description: Number of users who reacted with this emoji
+                              self:
+                                type: boolean
+                                description: Whether the current user has reacted with this emoji
                   isOwner:
                     type: boolean
                   users:

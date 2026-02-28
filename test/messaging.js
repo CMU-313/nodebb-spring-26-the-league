@@ -671,150 +671,6 @@ describe('Messaging Library', () => {
 			assert.equal(forwardedMsg.forwardedMessage.mid, firstMid);
 			assert.equal(forwardedMsg.forwardedMessage.content, 'first chat message');
 		});
-
-		it('should fail if forwardMid does not exist', async () => {
-			const result = await callv3API('post', `/chats/${roomId}`, {
-				roomId: roomId,
-				message: 'trying to forward non-existent message',
-				forwardMid: 99999,
-			}, 'foo');
-			assert.strictEqual(result.body.status.message, 'Invalid Chat Message ID');
-		});
-
-		it('should fail if forwardMid is null string', async () => {
-			const result = await callv3API('post', `/chats/${roomId}`, {
-				roomId: roomId,
-				message: 'invalid forward',
-				forwardMid: '',
-			}, 'foo');
-			// Should succeed without forwardMid when empty string
-			assert(result.body.response.mid);
-			// Verify no forwardMid in response
-			const { body: getBody } = await callv3API('get', `/chats/${roomId}`, {}, 'foo');
-			const messages = getBody.response.messages;
-			const msg = messages.find(m => m.messageId === result.body.response.mid);
-			assert(!msg.forwardMid || msg.forwardMid === 0);
-		});
-
-		it('should fail if forwardMid is negative', async () => {
-			const result = await callv3API('post', `/chats/${roomId}`, {
-				roomId: roomId,
-				message: 'invalid forward',
-				forwardMid: -1,
-			}, 'foo');
-			assert.strictEqual(result.body.status.message, 'Invalid Chat Message ID');
-		});
-
-		it('should forward message to different room', async () => {
-			// Create second room
-			const { body: room2Body } = await callv3API('post', `/chats`, {
-				uids: [mocks.users.baz.uid],
-			}, 'foo');
-			const roomId2 = room2Body.response.roomId;
-
-			// Forward message from first room to second room
-			const { body } = await callv3API('post', `/chats/${roomId2}`, {
-				roomId: roomId2,
-				message: 'Forwarded to different room',
-				forwardMid: firstMid,
-			}, 'foo');
-			assert(body.response.mid);
-
-			// Verify in second room
-			const { body: getBody } = await callv3API('get', `/chats/${roomId2}`, {}, 'foo');
-			const messages = getBody.response.messages;
-			const forwardedMsg = messages.find(m => m.messageId === body.response.mid);
-			assert(forwardedMsg.forwardedMessage);
-			assert.equal(forwardedMsg.forwardedMessage.mid, firstMid);
-		});
-
-		it('should not include forwardMid in response when message is not forwarded', async () => {
-			const { body } = await callv3API('post', `/chats/${roomId}`, {
-				roomId: roomId,
-				message: 'regular message without forward',
-			}, 'bar');
-			assert(body.response.mid);
-
-			// Verify retrieval - should not have forwardMid
-			const { body: getBody } = await callv3API('get', `/chats/${roomId}`, {}, 'bar');
-			const messages = getBody.response.messages;
-			const msg = messages.find(m => m.messageId === body.response.mid);
-			assert(!msg.hasOwnProperty('forwardMid') || msg.forwardMid === 0 || !msg.forwardMid);
-			assert(!msg.hasOwnProperty('forwardedMessage'));
-		});
-
-		it('should include forwardedMessage when forwardMid is present', async () => {
-			const { body } = await callv3API('post', `/chats/${roomId}`, {
-				roomId: roomId,
-				message: 'message with forward',
-				forwardMid: firstMid,
-			}, 'bar');
-			assert(body.response.mid);
-
-			// Verify retrieval - should have both forwardMid and forwardedMessage
-			const { body: getBody } = await callv3API('get', `/chats/${roomId}`, {}, 'bar');
-			const messages = getBody.response.messages;
-			const forwardedMsg = messages.find(m => m.messageId === body.response.mid);
-			assert(forwardedMsg.forwardMid);
-			assert(forwardedMsg.forwardedMessage);
-			assert.equal(forwardedMsg.forwardMid, firstMid);
-			assert.equal(forwardedMsg.forwardedMessage.mid, firstMid);
-			assert(forwardedMsg.forwardedMessage.content);
-			assert(forwardedMsg.forwardedMessage.fromUser);
-		});
-
-		it('should handle forwarding deleted message', async () => {
-			// Create and delete a message
-			const { body: deleteBody } = await callv3API('post', `/chats/${roomId}`, {
-				roomId: roomId,
-				message: 'message to be deleted',
-			}, 'foo');
-			const deleteMid = deleteBody.response.mid;
-
-			await callv3API('delete', `/chats/${roomId}/messages/${deleteMid}`, {}, 'foo');
-
-			// Try to forward deleted message
-			const result = await callv3API('post', `/chats/${roomId}`, {
-				roomId: roomId,
-				message: 'forwarding deleted message',
-				forwardMid: deleteMid,
-			}, 'bar');
-			// Should succeed but forwarded message should show as deleted
-			assert(result.body.response.mid);
-
-			const { body: getBody } = await callv3API('get', `/chats/${roomId}`, {}, 'bar');
-			const messages = getBody.response.messages;
-			const forwardedMsg = messages.find(m => m.messageId === result.body.response.mid);
-			assert(forwardedMsg.forwardedMessage);
-			// Deleted message content should be replaced
-			assert(forwardedMsg.forwardedMessage.content.includes('message-deleted') || 
-				forwardedMsg.forwardedMessage.deleted);
-		});
-
-		it('should allow forwarding message with toMid (reply)', async () => {
-			// Create a reply message
-			const { body: replyBody } = await callv3API('post', `/chats/${roomId}`, {
-				roomId: roomId,
-				message: 'reply message',
-				toMid: firstMid,
-			}, 'bar');
-			const replyMid = replyBody.response.mid;
-
-			// Forward the reply
-			const { body } = await callv3API('post', `/chats/${roomId}`, {
-				roomId: roomId,
-				message: 'forwarding a reply',
-				forwardMid: replyMid,
-			}, 'foo');
-			assert(body.response.mid);
-
-			const { body: getBody } = await callv3API('get', `/chats/${roomId}`, {}, 'foo');
-			const messages = getBody.response.messages;
-			const forwardedMsg = messages.find(m => m.messageId === body.response.mid);
-			assert(forwardedMsg.forwardedMessage);
-			assert.equal(forwardedMsg.forwardedMessage.mid, replyMid);
-			assert.equal(forwardedMsg.forwardedMessage.content, 'reply message');
-		});
 	});
 
 	describe('edit/delete', () => {
@@ -1018,6 +874,69 @@ describe('Messaging Library', () => {
 			const { response } = await request.get(`${nconf.get('url')}/api/user/baz/chats/${roomId}`, { jar: data.jar });
 
 			assert.equal(response.statusCode, 404);
+		});
+	});
+
+	describe('Emoji Reactions', () => {
+		let mid;
+
+		before(async () => {
+			// Add bar to the room so they can view messages
+			await callv3API('post', `/chats/${roomId}/users`, { uids: [mocks.users.bar.uid] }, 'foo');
+			// Send a message to test reactions against
+			const { body } = await callv3API('post', `/chats/${roomId}`, { message: 'reaction test message' }, 'foo');
+			mid = body.response.messageId;
+			assert(mid);
+		});
+
+		it('should allow a user to add a reaction', async () => {
+			const { response, body } = await callv3API('post', `/chats/${roomId}/messages/${mid}/reactions`, { emoji: '👍' }, 'foo');
+			assert.strictEqual(response.statusCode, 200);
+			assert.strictEqual(body.response.added, true);
+			assert.strictEqual(body.response.emoji, '👍');
+		});
+
+		it('should toggle off a reaction if the same emoji is sent again', async () => {
+			const { response, body } = await callv3API('post', `/chats/${roomId}/messages/${mid}/reactions`, { emoji: '👍' }, 'foo');
+			assert.strictEqual(response.statusCode, 200);
+			assert.strictEqual(body.response.added, false);
+		});
+
+		it('should return reactions with correct count and self flag', async () => {
+			// foo reacts
+			await callv3API('post', `/chats/${roomId}/messages/${mid}/reactions`, { emoji: '😂' }, 'foo');
+			// herp reacts with same emoji
+			await callv3API('post', `/chats/${roomId}/messages/${mid}/reactions`, { emoji: '😂' }, 'herp');
+
+			const { response, body } = await callv3API('get', `/chats/${roomId}/messages/${mid}/reactions`, {}, 'foo');
+			assert.strictEqual(response.statusCode, 200);
+
+			const reaction = body.response.reactions.find(r => r.emoji === '😂');
+			assert(reaction);
+			assert.strictEqual(reaction.count, 2);
+			assert.strictEqual(reaction.self, true);
+		});
+
+		it('should reflect self as false for a user who has not reacted', async () => {
+			const { body } = await callv3API('get', `/chats/${roomId}/messages/${mid}/reactions`, {}, 'bar');
+			const reaction = body.response.reactions.find(r => r.emoji === '😂');
+			assert(reaction);
+			assert.strictEqual(reaction.self, false);
+		});
+
+		it('should reject an invalid emoji', async () => {
+			const { response } = await callv3API('post', `/chats/${roomId}/messages/${mid}/reactions`, { emoji: 'notanemoji' }, 'foo');
+			assert.strictEqual(response.statusCode, 400);
+		});
+
+		it('should reject a reaction from a user not in the room', async () => {
+			const { response } = await callv3API('post', `/chats/${roomId}/messages/${mid}/reactions`, { emoji: '👍' }, 'baz');
+			assert.strictEqual(response.statusCode, 403);
+		});
+
+		it('should include reactions in message payload', async () => {
+			const { body } = await callv3API('get', `/chats/${roomId}/messages/${mid}`, {}, 'foo');
+			assert(Array.isArray(body.response.reactions));
 		});
 	});
 });

@@ -1,0 +1,97 @@
+get:
+  tags:
+    - chats
+  summary: Get reactions for a chat message
+  parameters:
+    - in: path
+      name: roomId
+      schema:
+        type: number
+      required: true
+      description: a valid chat room id
+      example: 1
+    - in: path
+      name: mid
+      schema:
+        type: number
+      required: true
+      description: a valid message id
+      example: 1
+  responses:
+    '200':
+      description: Reactions successfully retrieved
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: ../../../../components/schemas/Status.yaml#/Status
+              response:
+                type: object
+                properties:
+                  reactions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        emoji:
+                          type: string
+                          description: The emoji character
+                        count:
+                          type: number
+                          description: Number of users who reacted with this emoji
+                        self:
+                          type: boolean
+                          description: Whether the current user has reacted with this emoji
+post:
+  tags:
+    - chats
+  summary: Toggle an emoji reaction on a chat message
+  parameters:
+    - in: path
+      name: roomId
+      schema:
+        type: number
+      required: true
+      description: a valid chat room id
+      example: 1
+    - in: path
+      name: mid
+      schema:
+        type: number
+      required: true
+      description: a valid message id
+      example: 1
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - emoji
+          properties:
+            emoji:
+              type: string
+              description: The emoji character to react with
+              example: "👍"
+  responses:
+    '200':
+      description: Reaction toggled successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                $ref: ../../../../components/schemas/Status.yaml#/Status
+              response:
+                type: object
+                properties:
+                  added:
+                    type: boolean
+                    description: Whether the reaction was added (true) or removed (false)
+                  emoji:
+                    type: string
+                    description: The emoji character that was toggled

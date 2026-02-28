@@ -63,6 +63,10 @@ post:
             message:
               type: string
               example: This is a test message
+            forwardMid:
+              type: number
+              nullable: true
+              description: The message ID to forward (optional)
           required:
             - message
   responses:
@@ -88,6 +92,8 @@ post:
                         description: Whether the message is considered part of a new "set" of messages. It is used in the frontend UI for explicitly denoting that a time gap existed between messages.
                       mid:
                         type: number
+    '400':
+      $ref: ../../components/responses/400.yaml#/400
 put:
   tags:
     - chats

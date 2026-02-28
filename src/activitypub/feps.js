@@ -10,6 +10,10 @@ const activitypub = module.parent.exports;
 const Feps = module.exports;
 
 Feps.announce = async function announce(id, activity) {
+	if (!id || !activity) {
+		return;
+	}
+
 	let localId;
 	if (String(id).startsWith(nconf.get('url'))) {
 		({ id: localId } = await activitypub.helpers.resolveLocalId(id));
@@ -21,7 +25,14 @@ Feps.announce = async function announce(id, activity) {
 	 *  - local tids (posted to remote cids) only
 	 */
 	const tid = await posts.getPostField(localId || id, 'tid');
+	if (!tid) {
+		return;
+	}
+
 	const cid = await topics.getTopicField(tid, 'cid');
+	if (cid === null || cid === undefined) {
+		return;
+	}
 	const localCid = utils.isNumber(cid) && cid > 0;
 	const addressed = activitypub.helpers.addressed(cid, activity);
 	const shouldAnnounce = localCid || (utils.isNumber(tid) && !addressed);

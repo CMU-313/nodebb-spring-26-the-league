@@ -119,12 +119,16 @@ define('forum/chats', [
 		$('[data-action="close"]').on('click', function () {
 			Chats.switchChat();
 		});
+		console.log('Initializing user list for roomId:', roomId);
 		userList.init(roomId, mainWrapper);
 		Chats.addNotificationSettingHandler(roomId, mainWrapper);
 		messageSearch.init(roomId, mainWrapper);
 		Chats.addPublicRoomSortHandler();
 		Chats.addTooltipHandler(mainWrapper);
 		pinnedMessages.init(mainWrapper);
+
+		console.log('Initializing forward message dropdown');
+		messages.initForwardDropdown(); // Start the forward dropdown when hovering over message
 	};
 
 	Chats.addPublicRoomSortHandler = function () {
@@ -430,6 +434,7 @@ define('forum/chats', [
 			switch (action) {
 				case 'reply':
 					messages.prepReplyTo(msgEl, element);
+					
 					break;
 				case 'edit':
 					messages.prepEdit(msgEl, messageId, roomId);

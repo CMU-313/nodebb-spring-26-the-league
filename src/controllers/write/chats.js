@@ -55,6 +55,7 @@ Chats.post = async (req, res) => {
 	const messageObj = await api.chats.post(req, {
 		message: req.body.message,
 		toMid: req.body.toMid,
+		forwardMid: req.body.forwardMid,
 		roomId: req.params.roomId,
 	});
 
@@ -213,4 +214,15 @@ Chats.messages.unpin = async (req, res) => {
 	await api.chats.unpinMessage(req, { mid, roomId });
 
 	helpers.formatApiResponse(200, res);
+};
+
+Chats.messages.getReactions = async (req, res) => {
+	const { mid, roomId } = req.params;
+	helpers.formatApiResponse(200, res, await api.chats.getReactions(req, { mid, roomId }));
+};
+
+Chats.messages.toggleReaction = async (req, res) => {
+	const { mid, roomId } = req.params;
+	const { emoji } = req.body;
+	helpers.formatApiResponse(200, res, await api.chats.toggleReaction(req, { mid, roomId, emoji }));
 };

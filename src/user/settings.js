@@ -21,6 +21,14 @@ module.exports = function (User) {
 		categoryWatchState: 'notwatching',
 	});
 
+	const customThemeColorKeys = [
+		'customThemeColor_headerBg', 'customThemeColor_headerText',
+		'customThemeColor_bodyBg', 'customThemeColor_bodyText',
+		'customThemeColor_linkColor',
+		'customThemeColor_buttonBg', 'customThemeColor_buttonText',
+	];
+	const validHexColor = val => !val || /^#[0-9A-Fa-f]{6}$/.test(val);
+
 	User.getSettings = async function (uid) {
 		if (parseInt(uid, 10) <= 0) {
 			const isSpider = parseInt(uid, 10) === -1;
@@ -83,6 +91,10 @@ module.exports = function (User) {
 		settings.homePageRoute = validator.escape(String(settings.homePageRoute || '')).replace(/&#x2F;/g, '/');
 		settings.scrollToMyPost = parseInt(getSetting(settings, 'scrollToMyPost', 1), 10) === 1;
 		settings.categoryWatchState = getSetting(settings, 'categoryWatchState', 'notwatching');
+
+		for (const key of customThemeColorKeys) {
+			settings[key] = validator.escape(String(settings[key] || ''));
+		}
 
 		const notificationTypes = await notifications.getAllNotificationTypes();
 		notificationTypes.forEach((notificationType) => {
@@ -168,6 +180,13 @@ module.exports = function (User) {
 			chatAllowList: data.chatAllowList,
 			chatDenyList: data.chatDenyList,
 		};
+
+		for (const key of customThemeColorKeys) {
+			if (data[key] !== undefined && !validHexColor(data[key])) {
+				throw new Error('[[error:invalid-theme-color]]');
+			}
+			settings[key] = data[key] || '';
+		}
 		const notificationTypes = await notifications.getAllNotificationTypes();
 		notificationTypes.forEach((notificationType) => {
 			if (data[notificationType]) {

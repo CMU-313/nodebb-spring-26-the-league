@@ -9,7 +9,7 @@ const posts = require('../posts');
 const utils = require('../utils');
 const plugins = require('../plugins');
 
-const intFields = ['mid', 'timestamp', 'edited', 'fromuid', 'roomId', 'deleted', 'system'];
+const intFields = ['mid', 'timestamp', 'edited', 'fromuid', 'roomId', 'deleted', 'system', 'forwardMid'];
 
 module.exports = function (Messaging) {
 	Messaging.newMessageCutoff = 1000 * 60 * 3;
@@ -114,6 +114,9 @@ module.exports = function (Messaging) {
 		}
 
 		await addParentMessages(messages, uid, roomId);
+		await addForwardedMessages(messages, uid, roomId);
+		await addReactions(messages, uid, roomId);
+		
 
 		const data = await plugins.hooks.fire('filter:messaging.getMessages', {
 			messages: messages,
@@ -125,6 +128,8 @@ module.exports = function (Messaging) {
 
 		return data && data.messages;
 	};
+
+	
 
 	async function addParentMessages(messages, uid, roomId) {
 		let parentMids = messages.map(msg => (msg && msg.hasOwnProperty('toMid') ? parseInt(msg.toMid, 10) : null)).filter(Boolean);
@@ -172,6 +177,72 @@ module.exports = function (Messaging) {
 				msg.parent.mid = msg.toMid;
 			}
 		});
+	}
+
+	async function addForwardedMessages(messages, uid, roomId) {
+		messages.forEach((msg) => {
+			if (msg.hasOwnProperty('forwardMid') && (!msg.forwardMid || msg.forwardMid === 0)) {
+				delete msg.forwardMid;
+			}
+		});
+
+		let forwardMids = messages.map(msg => (
+			msg && msg.forwardMid && msg.forwardMid > 0 ? parseInt(msg.forwardMid, 10) : null
+		)).filter(Boolean);
+
+		if (!forwardMids.length) {
+			return;
+		}
+		forwardMids = _.uniq(forwardMids);
+
+		const forwardedMessages = await Messaging.getMessagesFields(forwardMids, [
+			'mid', 'fromuid', 'content', 'timestamp', 'deleted',
+		]);
+		const parentUids = _.uniq(forwardedMessages.map(msg => msg && msg.fromuid));
+		const usersMap = _.zipObject(
+			parentUids,
+			await user.getUsersFields(parentUids, ['uid', 'username', 'userslug', 'picture'])
+		);
+
+		await Promise.all(forwardedMessages.map(async (forwardedMsg) => {
+			if (forwardedMsg.deleted && forwardedMsg.fromuid !== parseInt(uid, 10)) {
+				forwardedMsg.content = `<p>[[modules:chat.message-deleted]]</p>`;
+				return;
+			}
+			const foundMsg = messages.find(msg => parseInt(msg.mid, 10) === parseInt(forwardedMsg.mid, 10));
+			if (foundMsg) {
+				forwardedMsg.content = foundMsg.content;
+				return;
+			}
+			forwardedMsg.content = await parseMessage(forwardedMsg, uid, roomId, false);
+		}));
+
+		const parents = {};
+		forwardedMessages.forEach((msg, i) => {
+			if (usersMap[msg.fromuid]) {
+				msg.user = usersMap[msg.fromuid];
+				parents[forwardMids[i]] = msg;
+			}
+		});
+
+		messages.forEach((msg) => {
+			if (msg.forwardMid && msg.forwardMid > 0) {
+				if (parents[msg.forwardMid]) {
+					msg.forwardedMessage = parents[msg.forwardMid];
+					msg.forwardedMessage.mid = msg.forwardMid;
+				} else {
+					msg.forwardedMessage = null;
+				}
+			}
+		});
+	}
+
+	async function addReactions(messages, uid, roomId) {
+		await Promise.all(messages.map(async (msg) => {
+			if (msg && msg.messageId) {
+				msg.reactions = await Messaging.getReactions(msg.messageId, roomId, uid);
+			}
+		}));
 	}
 
 	async function parseMessages(messages, uid, roomId, isNew) {

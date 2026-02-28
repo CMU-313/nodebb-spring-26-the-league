@@ -26,6 +26,7 @@ require('./rooms')(Messaging);
 require('./unread')(Messaging);
 require('./notifications')(Messaging);
 require('./pins')(Messaging);
+require('./reactions')(Messaging);
 
 Messaging.notificationSettings = Object.create(null);
 Messaging.notificationSettings.NONE = 1;
@@ -62,7 +63,6 @@ Messaging.getMessages = async (params) => {
 	messageData.forEach((msg) => {
 		msg.index = indices[msg.messageId.toString()];
 	});
-
 	return messageData;
 };
 
