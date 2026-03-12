@@ -1,0 +1,70 @@
+(base) macbook-air-429:nodebb-spring-26-the-league admin$ k6 run k6/load-test.js
+
+         /\      Grafana   /‾‾/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ‾‾\ 
+  /          \   |   (  |  (‾)  |
+ / __________ \  |_|\_\  \_____/ 
+
+
+     execution: local
+        script: k6/load-test.js
+        output: -
+
+     scenarios: (100.00%) 1 scenario, 50 max VUs, 4m0s max duration (incl. graceful stop)
+              * default: Up to 50 looping VUs for 3m30s over 5 stages (gracefulRampDown: 30s, gracefulStop: 30s)
+
+
+
+  █ THRESHOLDS 
+
+    error_rate
+    ✓ 'rate<0.1' rate=0.00%
+
+    http_req_duration
+    ✓ 'p(95)<2000' p(95)=79.6ms
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......: 11952  45.684351/s
+    checks_succeeded...: 99.98% 11950 out of 11952
+    checks_failed......: 0.01%  2 out of 11952
+
+    ✓ homepage status is 200
+    ✗ homepage loads in <2s
+      ↳  99% — ✓ 1327 / ✗ 1
+    ✓ categories status is 200
+    ✓ categories loads in <2s
+    ✓ recent topics status is 200
+    ✗ recent topics loads in <2s
+      ↳  99% — ✓ 1327 / ✗ 1
+    ✓ API status is 200
+    ✓ API responds in <1s
+    ✓ API returns JSON
+
+    CUSTOM
+    error_rate.....................: 0.00%  0 out of 5312
+    response_time..................: avg=53.82293 min=5.15   med=23.004 max=53607.938 p(90)=36.1136 p(95)=79.60265
+
+    HTTP
+    http_req_duration..............: avg=53.82ms  min=5.15ms med=23ms   max=53.6s     p(90)=36.11ms p(95)=79.6ms  
+      { expected_response:true }...: avg=53.82ms  min=5.15ms med=23ms   max=53.6s     p(90)=36.11ms p(95)=79.6ms  
+    http_req_failed................: 0.00%  0 out of 5312
+    http_reqs......................: 5312   20.304156/s
+
+    EXECUTION
+    iteration_duration.............: avg=4.14s    min=4.06s  med=4.09s  max=10.05s    p(90)=4.23s   p(95)=4.48s   
+    iterations.....................: 1328   5.076039/s
+    vus............................: 1      min=1         max=50
+    vus_max........................: 50     min=50        max=50
+
+    NETWORK
+    data_received..................: 217 MB 829 kB/s
+    data_sent......................: 951 kB 3.6 kB/s
+
+
+
+
+running (4m21.6s), 00/50 VUs, 1328 complete and 0 interrupted iterations
+default ✓ [======================================] 00/50 VUs  3m30s
