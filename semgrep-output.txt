@@ -1,0 +1,1867 @@
+┌─────────────┐
+│ Scan Status │
+└─────────────┘
+  Scanning 1549 files tracked by git with 1063 Code rules:
+
+  Language      Rules   Files          Origin      Rules
+ ─────────────────────────────        ───────────────────
+  <multilang>      60    1549          Community    1063
+  js              156     864
+  yaml             31     309
+  php              38     224
+  json              4      17
+  ts              166       6
+  dockerfile        6       3
+  bash              4       3
+  html              1       3
+
+
+
+┌───────────────────┐
+│ 188 Code Findings │
+└───────────────────┘
+
+    docker-compose-pgsql.yml
+    ❯❱ yaml.docker-compose.security.no-new-privileges.no-new-privileges
+          ❰❰ Blocking ❱❱
+          Service 'postgres' allows for privilege escalation via
+          setuid or setgid binaries. Add 'no-new-privileges:true' in
+          'security_opt' to prevent this.
+          Details: https://sg.run/0n8q
+
+           16┆ postgres:
+
+    ❯❱ yaml.docker-compose.security.writable-filesystem-service.writable-
+       filesystem-service
+          ❰❰ Blocking ❱❱
+          Service 'postgres' is running with a writable root
+          filesystem. This may allow malicious applications to
+          download and run additional payloads, or modify container
+          files. If an application inside a container has to save
+          something temporarily consider using a tmpfs. Add
+          'read_only: true' to this service to prevent this.
+          Details: https://sg.run/e4JE
+
+           16┆ postgres:
+
+    ❯❱ yaml.docker-compose.security.no-new-privileges.no-new-privileges
+          ❰❰ Blocking ❱❱
+          Service 'redis' allows for privilege escalation via setuid
+          or setgid binaries. Add 'no-new-privileges:true' in
+          'security_opt' to prevent this.
+          Details: https://sg.run/0n8q
+
+           26┆ redis:
+
+    ❯❱ yaml.docker-compose.security.writable-filesystem-service.writable-
+       filesystem-service
+          ❰❰ Blocking ❱❱
+          Service 'redis' is running with a writable root filesystem.
+          This may allow malicious applications to download and run
+          additional payloads, or modify container files. If an
+          application inside a container has to save something
+          temporarily consider using a tmpfs. Add 'read_only: true' to
+          this service to prevent this.
+          Details: https://sg.run/e4JE
+
+           26┆ redis:
+
+    docker-compose-redis.yml
+    ❯❱ yaml.docker-compose.security.no-new-privileges.no-new-privileges
+          ❰❰ Blocking ❱❱
+          Service 'redis' allows for privilege escalation via setuid
+          or setgid binaries. Add 'no-new-privileges:true' in
+          'security_opt' to prevent this.
+          Details: https://sg.run/0n8q
+
+           17┆ redis:
+
+    ❯❱ yaml.docker-compose.security.writable-filesystem-service.writable-
+       filesystem-service
+          ❰❰ Blocking ❱❱
+          Service 'redis' is running with a writable root filesystem.
+          This may allow malicious applications to download and run
+          additional payloads, or modify container files. If an
+          application inside a container has to save something
+          temporarily consider using a tmpfs. Add 'read_only: true' to
+          this service to prevent this.
+          Details: https://sg.run/e4JE
+
+           17┆ redis:
+
+    install/web.js
+     ❱ javascript.express.security.audit.express-check-csurf-middleware-
+       usage.express-check-csurf-middleware-usage
+          ❰❰ Blocking ❱❱
+          A CSRF middleware was not detected in your express
+          application. Ensure you are either using one such as `csurf`
+          or `csrf` (see rule references) and/or you are properly
+          doing CSRF validation in your routes with a token or
+          cookies.
+          Details: https://sg.run/BxzR
+
+           22┆ const app = express();
+
+    ❯❱ javascript.express.security.audit.express-cookie-settings.express-
+       cookie-session-default-name
+          ❰❰ Blocking ❱❱
+          Don’t use the default session cookie name Using the default
+          session cookie name can open your app to attacks. The
+          security issue posed is similar to X-Powered-By: a potential
+          attacker can use it to fingerprint the server and target
+          attacks accordingly.
+          Details: https://sg.run/1Z5x
+
+           81┆ app.use(session({
+           82┆    secret: utils.generateUUID(),
+           83┆    resave: false,
+           84┆    saveUninitialized: false,
+           85┆ }));
+
+    ❯❱ javascript.express.security.audit.express-cookie-settings.express-
+       cookie-session-no-domain
+          ❰❰ Blocking ❱❱
+          Default session middleware settings: `domain` not set. It
+          indicates the domain of the cookie; use it to compare
+          against the domain of the server in which the URL is being
+          requested. If they match, then check the path attribute
+          next.
+          Details: https://sg.run/rd41
+
+           81┆ app.use(session({
+           82┆    secret: utils.generateUUID(),
+           83┆    resave: false,
+           84┆    saveUninitialized: false,
+           85┆ }));
+
+    ❯❱ javascript.express.security.audit.express-cookie-settings.express-
+       cookie-session-no-expires
+          ❰❰ Blocking ❱❱
+          Default session middleware settings: `expires` not set. Use
+          it to set expiration date for persistent cookies.
+          Details: https://sg.run/N4eG
+
+           81┆ app.use(session({
+           82┆    secret: utils.generateUUID(),
+           83┆    resave: false,
+           84┆    saveUninitialized: false,
+           85┆ }));
+
+    ❯❱ javascript.express.security.audit.express-cookie-settings.express-
+       cookie-session-no-httponly
+          ❰❰ Blocking ❱❱
+          Default session middleware settings: `httpOnly` not set. It
+          ensures the cookie is sent only over HTTP(S), not client
+          JavaScript, helping to protect against cross-site scripting
+          attacks.
+          Details: https://sg.run/ydBO
+
+           81┆ app.use(session({
+           82┆    secret: utils.generateUUID(),
+           83┆    resave: false,
+           84┆    saveUninitialized: false,
+           85┆ }));
+
+    ❯❱ javascript.express.security.audit.express-cookie-settings.express-
+       cookie-session-no-path
+          ❰❰ Blocking ❱❱
+          Default session middleware settings: `path` not set. It
+          indicates the path of the cookie; use it to compare against
+          the request path. If this and domain match, then send the
+          cookie in the request.
+          Details: https://sg.run/b7pd
+
+           81┆ app.use(session({
+           82┆    secret: utils.generateUUID(),
+           83┆    resave: false,
+           84┆    saveUninitialized: false,
+           85┆ }));
+
+    ❯❱ javascript.express.security.audit.express-cookie-settings.express-
+       cookie-session-no-secure
+          ❰❰ Blocking ❱❱
+          Default session middleware settings: `secure` not set. It
+          ensures the browser only sends the cookie over HTTPS.
+          Details: https://sg.run/9oKz
+
+           81┆ app.use(session({
+           82┆    secret: utils.generateUUID(),
+           83┆    resave: false,
+           84┆    saveUninitialized: false,
+           85┆ }));
+
+   ❯❯❱ javascript.express.security.require-request.require-request
+          ❰❰ Blocking ❱❱
+          If an attacker controls the x in require(x) then they can
+          cause code to load that was not intended to run on the
+          server.
+          Details: https://sg.run/jRbl
+
+          129┆ db = require(`../src/database/${dbName}`);
+
+   ❯❯❱ javascript.express.security.audit.remote-property-injection.remote-
+       property-injection
+          ❰❰ Blocking ❱❱
+          Bracket object notation with user input is present, this
+          might allow an attacker to access all properties of the
+          object and even it's prototype. Use literal values for
+          object properties.
+          Details: https://sg.run/Z4gn
+
+          133┆ opts[key.replace(`${dbName}:`, '')] =
+               req.query[key];
+
+    public/src/admin/modules/search.js
+    ❯❱ javascript.lang.security.audit.detect-non-literal-regexp.detect-non-
+       literal-regexp
+          ❰❰ Blocking ❱❱
+          RegExp() called with a `term` function argument, this might
+          allow an attacker to cause a Regular Expression Denial-of-
+          Service (ReDoS) within your application as RegExP blocks the
+          main thread. For this reason, it is recommended to use
+          hardcoded regexes instead. If your regex is run on user-
+          controlled input, consider performing input validation or
+          use a regex checking/sanitization library such as
+          https://www.npmjs.com/package/recheck to verify that the
+          regex does not appear vulnerable to ReDoS.
+          Details: https://sg.run/gr65
+
+           17┆ .replace(new RegExp('^(?:(?!' + escaped + ').)*$',
+               'gmi'), '')
+            ⋮┆----------------------------------------
+    ❯❱ javascript.lang.security.audit.detect-non-literal-regexp.detect-non-
+       literal-regexp
+          ❰❰ Blocking ❱❱
+          RegExp() called with a `params` function argument, this
+          might allow an attacker to cause a Regular Expression
+          Denial-of-Service (ReDoS) within your application as RegExP
+          blocks the main thread. For this reason, it is recommended
+          to use hardcoded regexes instead. If your regex is run on
+          user-controlled input, consider performing input validation
+          or use a regex checking/sanitization library such as
+          https://www.npmjs.com/package/recheck to verify that the
+          regex does not appear vulnerable to ReDoS.
+          Details: https://sg.run/gr65
+
+           19┆ .replace(new RegExp('(^|\\n).*?' + title +
+               '.*?(\\n|$)', 'g'), '')
+            ⋮┆----------------------------------------
+    ❯❱ javascript.lang.security.audit.detect-non-literal-regexp.detect-non-
+       literal-regexp
+          ❰❰ Blocking ❱❱
+          RegExp() called with a `term` function argument, this might
+          allow an attacker to cause a Regular Expression Denial-of-
+          Service (ReDoS) within your application as RegExP blocks the
+          main thread. For this reason, it is recommended to use
+          hardcoded regexes instead. If your regex is run on user-
+          controlled input, consider performing input validation or
+          use a regex checking/sanitization library such as
+          https://www.npmjs.com/package/recheck to verify that the
+          regex does not appear vulnerable to ReDoS.
+          Details: https://sg.run/gr65
+
+           23┆ new RegExp('^[\\s\\S]*?(.{0,25})(' + escaped +
+               ')(.{0,25})[\\s\\S]*?$', 'gmi'),
+            ⋮┆----------------------------------------
+           31┆ new RegExp('(^.*?)(' + escaped + ')(.*?$)', 'gi'),
+
+    public/src/admin/settings/activitypub.js
+   ❯❯❱ javascript.browser.security.insecure-document-method.insecure-document-
+       method
+          ❰❰ Blocking ❱❱
+          User controlled data in methods like `innerHTML`,
+          `outerHTML` or `document.write` is an anti-pattern that can
+          lead to XSS vulnerabilities
+          Details: https://sg.run/LwA9
+
+           32┆ tbodyEl.innerHTML = html;
+            ⋮┆----------------------------------------
+           79┆ tbodyEl.innerHTML = html;
+            ⋮┆----------------------------------------
+          103┆ el.innerHTML = text;
+
+    public/src/ajaxify.js
+    ❯❱ javascript.lang.security.audit.detect-non-literal-regexp.detect-non-
+       literal-regexp
+          ❰❰ Blocking ❱❱
+          RegExp() called with a `val` function argument, this might
+          allow an attacker to cause a Regular Expression Denial-of-
+          Service (ReDoS) within your application as RegExP blocks the
+          main thread. For this reason, it is recommended to use
+          hardcoded regexes instead. If your regex is run on user-
+          controlled input, consider performing input validation or
+          use a regex checking/sanitization library such as
+          https://www.npmjs.com/package/recheck to verify that the
+          regex does not appear vulnerable to ReDoS.
+          Details: https://sg.run/gr65
+
+          296┆ return new RegExp(val);
+
+    public/src/modules/search.js
+    ❯❱ javascript.lang.security.audit.detect-non-literal-regexp.detect-non-
+       literal-regexp
+          ❰❰ Blocking ❱❱
+          RegExp() called with a `searchQuery` function argument, this
+          might allow an attacker to cause a Regular Expression
+          Denial-of-Service (ReDoS) within your application as RegExP
+          blocks the main thread. For this reason, it is recommended
+          to use hardcoded regexes instead. If your regex is run on
+          user-controlled input, consider performing input validation
+          or use a regex checking/sanitization library such as
+          https://www.npmjs.com/package/recheck to verify that the
+          regex does not appear vulnerable to ReDoS.
+          Details: https://sg.run/gr65
+
+          326┆ const regex = new RegExp('(' + regexStr + ')',
+               'gi');
+
+    public/src/modules/settings.js
+    ❯❱ javascript.lang.security.audit.prototype-pollution.prototype-pollution-
+       loop.prototype-pollution-loop
+          ❰❰ Blocking ❱❱
+          Possibility of prototype polluting function detected. By
+          adding or modifying attributes of an object prototype, it is
+          possible to create attributes that exist on every object, or
+          replace critical attributes with malicious ones. This can be
+          problematic if the software depends on existence or non-
+          existence of certain attributes, or uses pre-defined
+          attributes of object prototype (such as hasOwnProperty,
+          toString or valueOf). Possible mitigations might be:
+          freezing the object prototype, using an object without
+          prototypes (via Object.create(null) ), blocking
+          modifications of attributes that resolve to object
+          prototype, using Map instead of object.
+          Details: https://sg.run/w1DB
+
+          214┆ value = value[part];
+            ⋮┆----------------------------------------
+          431┆ parentCfg = parentCfg[part];
+
+    public/src/modules/translator.common.js
+    ❯❱ javascript.lang.security.audit.detect-non-literal-regexp.detect-non-
+       literal-regexp
+          ❰❰ Blocking ❱❱
+          RegExp() called with a `i` function argument, this might
+          allow an attacker to cause a Regular Expression Denial-of-
+          Service (ReDoS) within your application as RegExP blocks the
+          main thread. For this reason, it is recommended to use
+          hardcoded regexes instead. If your regex is run on user-
+          controlled input, consider performing input validation or
+          use a regex checking/sanitization library such as
+          https://www.npmjs.com/package/recheck to verify that the
+          regex does not appear vulnerable to ReDoS.
+          Details: https://sg.run/gr65
+
+          267┆ out = out.replace(new RegExp('%' + (i + 1), 'g'),
+               escaped);
+
+    ❯❱ javascript.lang.security.audit.prototype-pollution.prototype-pollution-
+       loop.prototype-pollution-loop
+          ❰❰ Blocking ❱❱
+          Possibility of prototype polluting function detected. By
+          adding or modifying attributes of an object prototype, it is
+          possible to create attributes that exist on every object, or
+          replace critical attributes with malicious ones. This can be
+          problematic if the software depends on existence or non-
+          existence of certain attributes, or uses pre-defined
+          attributes of object prototype (such as hasOwnProperty,
+          toString or valueOf). Possible mitigations might be:
+          freezing the object prototype, using an object without
+          prototypes (via Object.create(null) ), blocking
+          modifications of attributes that resolve to object
+          prototype, using Map instead of object.
+          Details: https://sg.run/w1DB
+
+          302┆ x = x[keyParts[i]];
+
+    public/src/utils.common.js
+    ❯❱ javascript.lang.security.audit.detect-non-literal-regexp.detect-non-
+       literal-regexp
+          ❰❰ Blocking ❱❱
+          RegExp() called with a `tags` function argument, this might
+          allow an attacker to cause a Regular Expression Denial-of-
+          Service (ReDoS) within your application as RegExP blocks the
+          main thread. For this reason, it is recommended to use
+          hardcoded regexes instead. If your regex is run on user-
+          controlled input, consider performing input validation or
+          use a regex checking/sanitization library such as
+          https://www.npmjs.com/package/recheck to verify that the
+          regex does not appear vulnerable to ReDoS.
+          Details: https://sg.run/gr65
+
+          301┆ return String(str).replace(new RegExp('<(\\/)?(' +
+               (pattern || '[^\\s>]+') +
+               ')(\\s+[^<>]*?)?\\s*(\\/)?>', 'gi'), '');
+
+    src/activitypub/mocks.js
+    ❯❱ javascript.lang.security.audit.detect-non-literal-regexp.detect-non-
+       literal-regexp
+          ❰❰ Blocking ❱❱
+          RegExp() called with a `tag` function argument, this might
+          allow an attacker to cause a Regular Expression Denial-of-
+          Service (ReDoS) within your application as RegExP blocks the
+          main thread. For this reason, it is recommended to use
+          hardcoded regexes instead. If your regex is run on user-
+          controlled input, consider performing input validation or
+          use a regex checking/sanitization library such as
+          https://www.npmjs.com/package/recheck to verify that the
+          regex does not appear vulnerable to ReDoS.
+          Details: https://sg.run/gr65
+
+          206┆ summary = summary.replace(new RegExp(tag.name,
+               'g'), `<img class="not-responsive emoji"
+               src="${tag.icon.url}" title="${tag.name}" />`);
+            ⋮┆----------------------------------------
+          318┆ summary = summary.replace(new RegExp(tag.name,
+               'g'), `<img class="not-responsive emoji"
+               src="${tag.icon.url}" title="${tag.name}" />`);
+
+    src/activitypub/notes.js
+    ❯❱ javascript.lang.security.audit.detect-non-literal-regexp.detect-non-
+       literal-regexp
+          ❰❰ Blocking ❱❱
+          RegExp() called with a `tag` function argument, this might
+          allow an attacker to cause a Regular Expression Denial-of-
+          Service (ReDoS) within your application as RegExP blocks the
+          main thread. For this reason, it is recommended to use
+          hardcoded regexes instead. If your regex is run on user-
+          controlled input, consider performing input validation or
+          use a regex checking/sanitization library such as
+          https://www.npmjs.com/package/recheck to verify that the
+          regex does not appear vulnerable to ReDoS.
+          Details: https://sg.run/gr65
+
+          180┆ title = title.replace(new RegExp(tag.name, 'g'),
+               '');
+
+    src/admin/search.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           62┆ const template = await fs.promises.readFile(path.re
+               solve(nconf.get('views_dir'), `${namespace}.tpl`),
+               'utf8');
+
+    src/api/users.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+          664┆ const stat = await fs.stat(path.join(__dirname,
+               '../../build/export', filename));
+
+    src/categories/icon.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           21┆ const paths =
+               Icons._constants.extensions.map(extension =>
+               path.resolve(nconf.get('upload_path'), 'category',
+               `category-${cid}-icon.${extension}`));
+            ⋮┆----------------------------------------
+           37┆ const paths =
+               Icons._constants.extensions.map(extension =>
+               path.resolve(nconf.get('upload_path'), 'category',
+               `category-${cid}-icon.${extension}`));
+            ⋮┆----------------------------------------
+           96┆ await
+               fs.writeFile(path.resolve(nconf.get('upload_path'),
+               'category', `category-${cid}-icon.svg`), svg);
+            ⋮┆----------------------------------------
+          103┆ await
+               fs.writeFile(path.resolve(nconf.get('upload_path'),
+               'category', `category-${cid}-icon.png`),
+               pngBuffer);
+
+    src/cli/index.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           29┆ const { version } =
+               JSON.parse(fs.readFileSync(path.join(paths.nodeModu
+               les, packageName, 'package.json'), 'utf8'));
+
+    src/cli/package-install.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+          159┆ const isLink =
+               fs.lstatSync(path.join(paths.nodeModules,
+               pkgName)).isSymbolicLink();
+            ⋮┆----------------------------------------
+          165┆ const pkgConfig =
+               JSON.parse(fs.readFileSync(path.join(paths.nodeModu
+               les, pkgName, 'package.json'), 'utf8'));
+
+    src/cli/reset.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           99┆ await
+               fs.promises.access(path.join(paths.nodeModules,
+               themeId, 'package.json'));
+
+    src/cli/upgrade-plugins.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           28┆ path.join(paths.nodeModules, module,
+               'package.json'), { encoding: 'utf-8' }
+            ⋮┆----------------------------------------
+           60┆ fs.accessSync(path.join(paths.nodeModules, pkgName,
+               '.git'));
+
+    src/controllers/admin/info.js
+   ❯❯❱ javascript.lang.security.detect-child-process.detect-child-process
+          ❰❰ Blocking ❱❱
+          Detected calls to child_process from a function argument
+          `cmd`. This could lead to a command injection if the input
+          is user controllable. Try to avoid calls to child_process,
+          and if it is needed ensure user input is correctly sanitized
+          or sandboxed.
+          Details: https://sg.run/l2lo
+
+          136┆ exec(cmd, (err, stdout) => {
+
+    src/controllers/admin/themes.js
+    ❯❱ javascript.express.security.audit.express-path-join-resolve-
+       traversal.express-path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Possible writing outside of the destination, make sure that
+          the target path is nested in the intended destination
+          Details: https://sg.run/weRn
+
+           14┆ const themeDir = path.join(paths.nodeModules,
+               req.params.theme);
+
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           14┆ const themeDir = path.join(paths.nodeModules,
+               req.params.theme);
+
+    ❯❱ javascript.express.security.audit.express-path-join-resolve-
+       traversal.express-path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Possible writing outside of the destination, make sure that
+          the target path is nested in the intended destination
+          Details: https://sg.run/weRn
+
+           15┆ const themeConfigPath = path.join(themeDir,
+               'theme.json');
+
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           15┆ const themeConfigPath = path.join(themeDir,
+               'theme.json');
+
+    ❯❱ javascript.express.security.audit.express-path-join-resolve-
+       traversal.express-path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Possible writing outside of the destination, make sure that
+          the target path is nested in the intended destination
+          Details: https://sg.run/weRn
+
+           29┆ path.join(themeDir, themeConfig.screenshot) :
+
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           29┆ path.join(themeDir, themeConfig.screenshot) :
+
+    ❯❱ javascript.express.security.audit.express-path-join-resolve-
+       traversal.express-path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Possible writing outside of the destination, make sure that
+          the target path is nested in the intended destination
+          Details: https://sg.run/weRn
+
+           29┆ path.join(themeDir, themeConfig.screenshot) :
+
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           29┆ path.join(themeDir, themeConfig.screenshot) :
+
+    ❯❱ javascript.express.security.audit.express-res-sendfile.express-res-
+       sendfile
+          ❰❰ Blocking ❱❱
+          The application processes user-input, this is passed to
+          res.sendFile which can allow an attacker to arbitrarily read
+          files on the system through path traversal. It is
+          recommended to perform input validation in addition to
+          canonicalizing the path. This allows you to validate the
+          path against the intended directory it should be accessing.
+          Details: https://sg.run/7DJk
+
+           36┆ res.sendFile(exists ? screenshotPath :
+               defaultScreenshotPath);
+
+    src/controllers/admin/uploads.js
+    ❯❱ javascript.express.security.audit.express-path-join-resolve-
+       traversal.express-path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Possible writing outside of the destination, make sure that
+          the target path is nested in the intended destination
+          Details: https://sg.run/weRn
+
+           22┆ const currentFolder =
+               path.join(nconf.get('upload_path'), req.query.dir
+               || '');
+
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           22┆ const currentFolder =
+               path.join(nconf.get('upload_path'), req.query.dir
+               || '');
+            ⋮┆----------------------------------------
+           79┆ const nextPath =
+               path.join(nconf.get('upload_path'), dir);
+            ⋮┆----------------------------------------
+          109┆ const dir = path.join(currentPath, part);
+            ⋮┆----------------------------------------
+          130┆ const pathToFile = path.join(currentDir, file);
+            ⋮┆----------------------------------------
+          130┆ const pathToFile = path.join(currentDir, file);
+
+    ❯❱ javascript.express.security.audit.express-path-join-resolve-
+       traversal.express-path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Possible writing outside of the destination, make sure that
+          the target path is nested in the intended destination
+          Details: https://sg.run/weRn
+
+          233┆ if (!await
+               file.exists(path.join(nconf.get('upload_path'),
+               params.folder))) {
+
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+          233┆ if (!await
+               file.exists(path.join(nconf.get('upload_path'),
+               params.folder))) {
+            ⋮┆----------------------------------------
+          283┆ const uploadPath =
+               path.join(nconf.get('upload_path'), folder, 'site-
+               logo-x50.png');
+
+    src/controllers/admin/users.js
+   ❯❯❱ javascript.express.security.audit.remote-property-injection.remote-
+       property-injection
+          ❰❰ Blocking ❱❱
+          Bracket object notation with user input is present, this
+          might allow an attacker to access all properties of the
+          object and even it's prototype. Use literal values for
+          object properties.
+          Details: https://sg.run/Z4gn
+
+          262┆ data[`sort_${data.sortBy}`] = true;
+            ⋮┆----------------------------------------
+          264┆ data[`searchBy_${validator.escape(String(req.query.
+               searchBy))}`] = true;
+
+    src/controllers/home.js
+    ❯❱ javascript.express.security.express-data-exfiltration.express-data-
+       exfiltration
+          ❰❰ Blocking ❱❱
+          Depending on the context, user control data in
+          `Object.assign` can cause web response to include data that
+          it should not have or can lead to a mass assignment
+          vulnerability.
+          Details: https://sg.run/pkpL
+
+           47┆ req.query = Object.assign(parsedUrl.query,
+               req.query);
+
+    src/controllers/mods.js
+   ❯❯❱ javascript.express.security.audit.remote-property-injection.remote-
+       property-injection
+          ❰❰ Blocking ❱❱
+          Bracket object notation with user input is present, this
+          might allow an attacker to access all properties of the
+          object and even it's prototype. Use literal values for
+          object properties.
+          Details: https://sg.run/Z4gn
+
+           49┆ memo[cur] =
+               validator.escape(String(req.query[cur].trim()));
+            ⋮┆----------------------------------------
+           51┆ memo[cur] = req.query[cur].map(item =>
+               validator.escape(String(item).trim()));
+
+    ❯❱ javascript.express.security.express-data-exfiltration.express-data-
+       exfiltration
+          ❰❰ Blocking ❱❱
+          Depending on the context, user control data in
+          `Object.assign` can cause web response to include data that
+          it should not have or can lead to a mass assignment
+          vulnerability.
+          Details: https://sg.run/pkpL
+
+          192┆ res.render('flags/detail',
+               Object.assign(results.flagData, {
+          193┆    assignees: assignees,
+          194┆    type_bool: ['post', 'user',
+               'empty'].reduce((memo, cur) => {
+          195┆            if (cur !== 'empty') {
+          196┆                    memo[cur] =
+               results.flagData.type === cur && (
+          197┆                            !results.flagData.target
+               ||
+          198┆
+               !!Object.keys(results.flagData.target).length
+          199┆                    );
+          200┆            } else {
+          201┆                    memo[cur] =
+               !Object.keys(results.flagData.target).length;
+             [hid 12 additional lines, adjust with --max-lines-per-finding]
+
+    src/controllers/users.js
+   ❯❯❱ javascript.express.security.audit.remote-property-injection.remote-
+       property-injection
+          ❰❰ Blocking ❱❱
+          Bracket object notation with user input is present, this
+          might allow an attacker to access all properties of the
+          object and even it's prototype. Use literal values for
+          object properties.
+          Details: https://sg.run/Z4gn
+
+           45┆ searchData[`section_${section}`] = true;
+
+    src/controllers/write/admin.js
+   ❯❯❱ javascript.express.security.express-wkhtml-injection.express-
+       wkhtmltoimage-injection
+          ❰❰ Blocking ❱❱
+          If unverified user data can reach the `phantom` methods it
+          can result in Server-Side Request Forgery vulnerabilities
+          Details: https://sg.run/pxe0
+
+           38┆ const token = await api.utils.tokens.generate({
+               uid, description });
+
+    src/controllers/write/users.js
+    ❯❱ javascript.express.security.audit.express-res-sendfile.express-res-
+       sendfile
+          ❰❰ Blocking ❱❱
+          The application processes user-input, this is passed to
+          res.sendFile which can allow an attacker to arbitrarily read
+          files on the system through path traversal. It is
+          recommended to perform input validation in addition to
+          canonicalizing the path. This allows you to validate the
+          path against the intended directory it should be accessing.
+          Details: https://sg.run/7DJk
+
+          215┆ res.sendFile(data.filename, {
+
+    src/database/mongo/main.js
+    ❯❱ javascript.lang.security.audit.detect-non-literal-regexp.detect-non-
+       literal-regexp
+          ❰❰ Blocking ❱❱
+          RegExp() called with a `params` function argument, this
+          might allow an attacker to cause a Regular Expression
+          Denial-of-Service (ReDoS) within your application as RegExP
+          blocks the main thread. For this reason, it is recommended
+          to use hardcoded regexes instead. If your regex is run on
+          user-controlled input, consider performing input validation
+          or use a regex checking/sanitization library such as
+          https://www.npmjs.com/package/recheck to verify that the
+          regex does not appear vulnerable to ReDoS.
+          Details: https://sg.run/gr65
+
+           44┆ '_key', { _key: { $regex: new RegExp(match) } }
+
+    src/database/mongo/sorted.js
+    ❯❱ javascript.lang.security.audit.detect-non-literal-regexp.detect-non-
+       literal-regexp
+          ❰❰ Blocking ❱❱
+          RegExp() called with a `params` function argument, this
+          might allow an attacker to cause a Regular Expression
+          Denial-of-Service (ReDoS) within your application as RegExP
+          blocks the main thread. For this reason, it is recommended
+          to use hardcoded regexes instead. If your regex is run on
+          user-controlled input, consider performing input validation
+          or use a regex checking/sanitization library such as
+          https://www.npmjs.com/package/recheck to verify that the
+          regex does not appear vulnerable to ReDoS.
+          Details: https://sg.run/gr65
+
+          549┆ regex = new RegExp(match);
+
+    src/emailer.js
+    ❯❱ problem-based-packs.insecure-transport.js-node.bypass-tls-
+       verification.bypass-tls-verification
+          ❰❰ Blocking ❱❱
+          Checks for setting the environment variable
+          NODE_TLS_REJECT_UNAUTHORIZED to 0, which disables TLS
+          verification. This should only be used for debugging
+          purposes. Setting the option rejectUnauthorized to false
+          bypasses verification against the list of trusted CAs, which
+          also leads to insecure transport. These options lead to
+          vulnerability to MTM attacks, and should not be used.
+          Details: https://sg.run/9oxr
+
+          157┆ smtpOptions.tls = {
+          158┆    rejectUnauthorized: false,
+          159┆ };
+
+    src/file.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           24┆ const uploadPath =
+               path.join(nconf.get('upload_path'), folder,
+               filename);
+            ⋮┆----------------------------------------
+           24┆ const uploadPath =
+               path.join(nconf.get('upload_path'), folder,
+               filename);
+            ⋮┆----------------------------------------
+          157┆ const res = path.resolve(dir, subdir);
+            ⋮┆----------------------------------------
+          157┆ const res = path.resolve(dir, subdir);
+
+    src/groups/cover.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           74┆ const filePath =
+               path.join(nconf.get('upload_path'), 'files',
+               filename);
+
+    src/languages.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           16┆ const pathToLanguageFile = path.join(languagesPath,
+               language, `${namespace}.json`);
+            ⋮┆----------------------------------------
+           16┆ const pathToLanguageFile = path.join(languagesPath,
+               language, `${namespace}.json`);
+            ⋮┆----------------------------------------
+           59┆ const configPath = path.join(languagesPath, folder,
+               'language.json');
+
+    src/logger.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           80┆ stream = fs.createWriteStream(path.join(value,
+               'nodebb.log'), { flags: 'a' });
+
+    src/meta/css.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+          166┆ const exists = await
+               file.exists(path.join(__dirname,
+               '../../node_modules', filepath));
+            ⋮┆----------------------------------------
+          186┆ const newFile = path.join(parsed.dir, parsed.name);
+            ⋮┆----------------------------------------
+          186┆ const newFile = path.join(parsed.dir, parsed.name);
+            ⋮┆----------------------------------------
+          342┆ await Promise.all(files.map(f =>
+               fs.promises.unlink(path.join(__dirname,
+               '../../build/public', f))));
+            ⋮┆----------------------------------------
+          350┆ fs.promises.writeFile(path.join(__dirname,
+               '../../build/public', `${target}.css`), ltr.code),
+            ⋮┆----------------------------------------
+          351┆ fs.promises.writeFile(path.join(__dirname,
+               '../../build/public', `${target}-rtl.css`),
+               rtl.code),
+
+    src/meta/dependencies.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           34┆ let pkgData = await
+               fs.promises.readFile(path.join(paths.nodeModules,
+               moduleName, 'package.json'), 'utf8');
+
+    src/meta/js.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           37┆ const srcPath = path.join(__dirname, '../../',
+               modules[relPath]);
+            ⋮┆----------------------------------------
+           38┆ const destPath = path.join(__dirname,
+               '../../build/public/src/modules', relPath);
+            ⋮┆----------------------------------------
+           65┆ p => path.join(__dirname, '../../build/public/src',
+               p)
+            ⋮┆----------------------------------------
+           92┆ const destDir = path.join(__dirname,
+               '../../build/public/plugins', mappedPath);
+            ⋮┆----------------------------------------
+          133┆ const filePath = path.join(__dirname,
+               '../../build/public', filename);
+
+    src/meta/languages.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           59┆ const filePath = path.join(buildLanguagesPath,
+               language, `${namespace}.json`);
+            ⋮┆----------------------------------------
+           59┆ const filePath = path.join(buildLanguagesPath,
+               language, `${namespace}.json`);
+            ⋮┆----------------------------------------
+           87┆ await assignFileToTranslations(translations,
+               path.join(coreLanguagesPath, lang,
+               `${namespace}.json`));
+            ⋮┆----------------------------------------
+           87┆ await assignFileToTranslations(translations,
+               path.join(coreLanguagesPath, lang,
+               `${namespace}.json`));
+            ⋮┆----------------------------------------
+          102┆ const pathToPluginLanguageFolder =
+               path.join(paths.nodeModules, pluginData.id,
+               pluginData.languages);
+            ⋮┆----------------------------------------
+          102┆ const pathToPluginLanguageFolder =
+               path.join(paths.nodeModules, pluginData.id,
+               pluginData.languages);
+            ⋮┆----------------------------------------
+          119┆ await assignFileToTranslations(translations,
+               path.join(pathToPluginLanguageFolder, language,
+               `${namespace}.json`));
+            ⋮┆----------------------------------------
+          119┆ await assignFileToTranslations(translations,
+               path.join(pathToPluginLanguageFolder, language,
+               `${namespace}.json`));
+            ⋮┆----------------------------------------
+          119┆ await assignFileToTranslations(translations,
+               path.join(pathToPluginLanguageFolder, language,
+               `${namespace}.json`));
+
+    ❯❱ javascript.lang.security.insecure-object-assign.insecure-object-assign
+          ❰❰ Blocking ❱❱
+          Depending on the context, user control data in
+          `Object.assign` can cause web response to include data that
+          it should not have or can lead to a mass assignment
+          vulnerability.
+          Details: https://sg.run/2R0D
+
+          126┆ Object.assign(translations, JSON.parse(fileData));
+
+    src/meta/templates.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           51┆ return path.join(paths.nodeModules, id,
+               plugins.pluginsData[id].templates || 'templates');
+            ⋮┆----------------------------------------
+           51┆ return path.join(paths.nodeModules, id,
+               plugins.pluginsData[id].templates || 'templates');
+            ⋮┆----------------------------------------
+          123┆ await mkdirp(path.join(viewsPath,
+               path.dirname(name)));
+            ⋮┆----------------------------------------
+          130┆ await fs.promises.writeFile(path.join(viewsPath,
+               name), imported);
+
+    src/meta/themes.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           27┆ const config = path.join(themePath, theme,
+               'theme.json');
+            ⋮┆----------------------------------------
+           28┆ const pack = path.join(themePath, theme,
+               'package.json');
+            ⋮┆----------------------------------------
+           66┆ const dirpath = path.join(themePath, dir);
+            ⋮┆----------------------------------------
+           66┆ const dirpath = path.join(themePath, dir);
+            ⋮┆----------------------------------------
+           76┆ const themes = await getThemes(path.join(themePath,
+               dir));
+            ⋮┆----------------------------------------
+           76┆ const themes = await getThemes(path.join(themePath,
+               dir));
+            ⋮┆----------------------------------------
+           77┆ return themes.map(theme => path.join(dir, theme));
+            ⋮┆----------------------------------------
+           77┆ return themes.map(theme => path.join(dir, theme));
+            ⋮┆----------------------------------------
+           97┆ const pathToThemeJson =
+               path.join(nconf.get('themes_path'), data.id,
+               'theme.json');
+            ⋮┆----------------------------------------
+          171┆ const fallback =
+               path.join(nconf.get('themes_path'), themeObj.id,
+               'templates');
+            ⋮┆----------------------------------------
+          174┆ themePath = path.join(nconf.get('themes_path'),
+               themeObj.id, themeObj.templates);
+            ⋮┆----------------------------------------
+          174┆ themePath = path.join(nconf.get('themes_path'),
+               themeObj.id, themeObj.templates);
+            ⋮┆----------------------------------------
+          183┆ nconf.set('theme_config',
+               path.join(nconf.get('themes_path'), themeObj.id,
+               'theme.json'));
+
+    src/middleware/assert.js
+    ❯❱ javascript.express.security.audit.express-path-join-resolve-
+       traversal.express-path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Possible writing outside of the destination, make sure that
+          the target path is nested in the intended destination
+          Details: https://sg.run/weRn
+
+           95┆ const pathToFile =
+               path.join(nconf.get('upload_path'), req.body.path);
+
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           95┆ const pathToFile =
+               path.join(nconf.get('upload_path'), req.body.path);
+            ⋮┆----------------------------------------
+          112┆ const folderPath =
+               path.join(res.locals.cleanedPath, folderName);
+
+    ❯❱ javascript.express.security.audit.express-path-join-resolve-
+       traversal.express-path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Possible writing outside of the destination, make sure that
+          the target path is nested in the intended destination
+          Details: https://sg.run/weRn
+
+          112┆ const folderPath =
+               path.join(res.locals.cleanedPath, folderName);
+
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+          112┆ const folderPath =
+               path.join(res.locals.cleanedPath, folderName);
+
+    src/middleware/headers.js
+    ❯❱ javascript.lang.security.audit.detect-non-literal-regexp.detect-non-
+       literal-regexp
+          ❰❰ Blocking ❱❱
+          RegExp() called with a `origin` function argument, this
+          might allow an attacker to cause a Regular Expression
+          Denial-of-Service (ReDoS) within your application as RegExP
+          blocks the main thread. For this reason, it is recommended
+          to use hardcoded regexes instead. If your regex is run on
+          user-controlled input, consider performing input validation
+          or use a regex checking/sanitization library such as
+          https://www.npmjs.com/package/recheck to verify that the
+          regex does not appear vulnerable to ReDoS.
+          Details: https://sg.run/gr65
+
+           44┆ origin = new RegExp(origin.trim());
+
+    src/plugins/data.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           29┆ .map(plugin => path.join(paths.nodeModules,
+               plugin));
+            ⋮┆----------------------------------------
+           41┆ fs.promises.readFile(path.join(pluginPath,
+               'package.json'), 'utf8'),
+            ⋮┆----------------------------------------
+           42┆ fs.promises.readFile(path.join(pluginPath,
+               'plugin.json'), 'utf8'),
+            ⋮┆----------------------------------------
+          146┆ return pluginData[type].map(file =>
+               path.join(pluginData.id, file));
+            ⋮┆----------------------------------------
+          146┆ return pluginData[type].map(file =>
+               path.join(pluginData.id, file));
+            ⋮┆----------------------------------------
+          156┆ const currentPath = path.join(basePath,
+               modulePath);
+            ⋮┆----------------------------------------
+          156┆ const currentPath = path.join(basePath,
+               modulePath);
+
+    ❯❱ javascript.lang.security.audit.detect-non-literal-regexp.detect-non-
+       literal-regexp
+          ❰❰ Blocking ❱❱
+          RegExp() called with a `pluginData` function argument, this
+          might allow an attacker to cause a Regular Expression
+          Denial-of-Service (ReDoS) within your application as RegExP
+          blocks the main thread. For this reason, it is recommended
+          to use hardcoded regexes instead. If your regex is run on
+          user-controlled input, consider performing input validation
+          or use a regex checking/sanitization library such as
+          https://www.npmjs.com/package/recheck to verify that the
+          regex does not appear vulnerable to ReDoS.
+          Details: https://sg.run/gr65
+
+          213┆ key = modulePath.replace(new
+               RegExp(`.?(/[^/]+){${strip}}/`), '');
+
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+          243┆ const pathToFolder = path.join(paths.nodeModules,
+               pluginData.id, pluginData.languages);
+            ⋮┆----------------------------------------
+          243┆ const pathToFolder = path.join(paths.nodeModules,
+               pluginData.id, pluginData.languages);
+
+    src/plugins/index.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+          273┆ pluginPaths = pluginPaths.map(dir =>
+               path.join(Plugins.nodeModulesPath, dir));
+            ⋮┆----------------------------------------
+          296┆ const dirPath = path.join(Plugins.nodeModulesPath,
+               dirname);
+            ⋮┆----------------------------------------
+          313┆ const subdirPath = path.join(dirPath, subdir);
+            ⋮┆----------------------------------------
+          313┆ const subdirPath = path.join(dirPath, subdir);
+
+    src/plugins/install.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+          150┆ const pluginDir = path.join(paths.nodeModules, id);
+            ⋮┆----------------------------------------
+          160┆ const pluginDir = path.join(paths.nodeModules, id,
+               'plugin.json');
+
+    src/posts/create.js
+    ❯❱ javascript.lang.security.audit.detect-non-literal-regexp.detect-non-
+       literal-regexp
+          ❰❰ Blocking ❱❱
+          RegExp() called with a `tag` function argument, this might
+          allow an attacker to cause a Regular Expression Denial-of-
+          Service (ReDoS) within your application as RegExP blocks the
+          main thread. For this reason, it is recommended to use
+          hardcoded regexes instead. If your regex is run on user-
+          controlled input, consider performing input validation or
+          use a regex checking/sanitization library such as
+          https://www.npmjs.com/package/recheck to verify that the
+          regex does not appear vulnerable to ReDoS.
+          Details: https://sg.run/gr65
+
+           64┆ postData[property] = postData[property].replace(new
+               RegExp(tag.name, 'g'), `<img class="not-responsive
+               emoji" src="${tag.icon.url}" title="${tag.name}"
+               />`);
+
+    src/posts/uploads.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           27┆ const _getFullPath = relativePath =>
+               path.join(pathPrefix, relativePath);
+
+    src/routes/index.js
+    ❯❱ javascript.lang.security.audit.detect-non-literal-regexp.detect-non-
+       literal-regexp
+          ❰❰ Blocking ❱❱
+          RegExp() called with a `mount` function argument, this might
+          allow an attacker to cause a Regular Expression Denial-of-
+          Service (ReDoS) within your application as RegExP blocks the
+          main thread. For this reason, it is recommended to use
+          hardcoded regexes instead. If your regex is run on user-
+          controlled input, consider performing input validation or
+          use a regex checking/sanitization library such as
+          https://www.npmjs.com/package/recheck to verify that the
+          regex does not appear vulnerable to ReDoS.
+          Details: https://sg.run/gr65
+
+          219┆ router.use(new RegExp(`/(api/)?${original}`), (req,
+               res) => {
+
+    src/settings.js
+    ❯❱ javascript.lang.security.audit.prototype-pollution.prototype-pollution-
+       loop.prototype-pollution-loop
+          ❰❰ Blocking ❱❱
+          Possibility of prototype polluting function detected. By
+          adding or modifying attributes of an object prototype, it is
+          possible to create attributes that exist on every object, or
+          replace critical attributes with malicious ones. This can be
+          problematic if the software depends on existence or non-
+          existence of certain attributes, or uses pre-defined
+          attributes of object prototype (such as hasOwnProperty,
+          toString or valueOf). Possible mitigations might be:
+          freezing the object prototype, using an object without
+          prototypes (via Object.create(null) ), blocking
+          modifications of attributes that resolve to object
+          prototype, using Map instead of object.
+          Details: https://sg.run/w1DB
+
+          139┆ obj = obj[part];
+            ⋮┆----------------------------------------
+          148┆ def = def[part];
+            ⋮┆----------------------------------------
+          205┆ obj = obj[part];
+
+    src/topics/thumbs.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+          174┆ const fullPath = path.join(upload_path, thumb);
+
+    src/upgrade.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           66┆ const configPath = path.join(paths.nodeModules,
+               plugin, 'plugin.json');
+            ⋮┆----------------------------------------
+           71┆ files.push(path.join(path.dirname(configPath),
+               script));
+            ⋮┆----------------------------------------
+           71┆ files.push(path.join(path.dirname(configPath),
+               script));
+
+    src/upgrades/1.19.2/remove_leftover_thumbs_after_topic_purge.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           35┆ const absolutePaths =
+               relativePaths.map(relativePath =>
+               path.join(nconf.get('upload_path'), relativePath));
+
+    src/upgrades/1.7.6/flatten_navigation_data.js
+    ❯❱ javascript.lang.security.audit.prototype-pollution.prototype-pollution-
+       loop.prototype-pollution-loop
+          ❰❰ Blocking ❱❱
+          Possibility of prototype polluting function detected. By
+          adding or modifying attributes of an object prototype, it is
+          possible to create attributes that exist on every object, or
+          replace critical attributes with malicious ones. This can be
+          problematic if the software depends on existence or non-
+          existence of certain attributes, or uses pre-defined
+          attributes of object prototype (such as hasOwnProperty,
+          toString or valueOf). Possible mitigations might be:
+          freezing the object prototype, using an object without
+          prototypes (via Object.create(null) ), blocking
+          modifications of attributes that resolve to object
+          prototype, using Map instead of object.
+          Details: https://sg.run/w1DB
+
+           16┆ navItem = navItem[keys[0]];
+
+    src/upgrades/3.8.0/user-upload-folders.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           33┆ await mkdirp(path.join(folder, `uid-${uid}`));
+            ⋮┆----------------------------------------
+           35┆ path.join(folder, file),
+            ⋮┆----------------------------------------
+           36┆ path.join(folder, `uid-${uid}`, file),
+            ⋮┆----------------------------------------
+           36┆ path.join(folder, `uid-${uid}`, file),
+
+    src/user/delete.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+          240┆ const folder = path.join(nconf.get('upload_path'),
+               'profile', `uid-${uid}`);
+
+    src/user/jobs/export-posts.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           30┆ const filePath = path.join(__dirname,
+               '../../../build/export', `${targetUid}_posts.csv`);
+
+    src/user/jobs/export-profile.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           33┆ const profilePath = path.join(__dirname,
+               '../../../build/export', profileFile);
+
+    src/user/jobs/export-uploads.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           31┆ const archivePath = path.join(__dirname,
+               '../../../build/export',
+               `${targetUid}_uploads.zip`);
+            ⋮┆----------------------------------------
+           77┆ const profileUploadPath =
+               path.join(nconf.get('upload_path'),
+               `profile/uid-${targetUid}`);
+
+    src/user/picture.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+          231┆ return path.join(nconf.get('upload_path'),
+               `profile/uid-${uid}`, filename);
+            ⋮┆----------------------------------------
+          231┆ return path.join(nconf.get('upload_path'),
+               `profile/uid-${uid}`, filename);
+
+    src/user/uploads.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           17┆ const _getFullPath = relativePath =>
+               path.join(pathPrefix, relativePath);
+
+    src/webserver.js
+     ❱ javascript.express.security.audit.express-check-csurf-middleware-
+       usage.express-check-csurf-middleware-usage
+          ❰❰ Blocking ❱❱
+          A CSRF middleware was not detected in your express
+          application. Ensure you are either using one such as `csurf`
+          or `csrf` (see rule references) and/or you are properly
+          doing CSRF validation in your routes with a token or
+          cookies.
+          Details: https://sg.run/BxzR
+
+           11┆ const app = express();
+
+    ❯❱ javascript.express.security.audit.express-cookie-settings.express-
+       cookie-session-default-name
+          ❰❰ Blocking ❱❱
+          Don’t use the default session cookie name Using the default
+          session cookie name can open your app to attacks. The
+          security issue posed is similar to X-Powered-By: a potential
+          attacker can use it to fingerprint the server and target
+          attacks accordingly.
+          Details: https://sg.run/1Z5x
+
+          174┆ app.use(session({
+          175┆    store: db.sessionStore,
+          176┆    secret: nconf.get('secret'),
+          177┆    key: nconf.get('sessionKey'),
+          178┆    cookie: setupCookie(),
+          179┆    resave: nconf.get('sessionResave') || false,
+          180┆    saveUninitialized:
+               nconf.get('sessionSaveUninitialized') || false,
+          181┆ }));
+
+    ❯❱ javascript.express.security.audit.express-cookie-settings.express-
+       cookie-session-no-domain
+          ❰❰ Blocking ❱❱
+          Default session middleware settings: `domain` not set. It
+          indicates the domain of the cookie; use it to compare
+          against the domain of the server in which the URL is being
+          requested. If they match, then check the path attribute
+          next.
+          Details: https://sg.run/rd41
+
+          174┆ app.use(session({
+          175┆    store: db.sessionStore,
+          176┆    secret: nconf.get('secret'),
+          177┆    key: nconf.get('sessionKey'),
+          178┆    cookie: setupCookie(),
+          179┆    resave: nconf.get('sessionResave') || false,
+          180┆    saveUninitialized:
+               nconf.get('sessionSaveUninitialized') || false,
+          181┆ }));
+
+    ❯❱ javascript.express.security.audit.express-cookie-settings.express-
+       cookie-session-no-expires
+          ❰❰ Blocking ❱❱
+          Default session middleware settings: `expires` not set. Use
+          it to set expiration date for persistent cookies.
+          Details: https://sg.run/N4eG
+
+          174┆ app.use(session({
+          175┆    store: db.sessionStore,
+          176┆    secret: nconf.get('secret'),
+          177┆    key: nconf.get('sessionKey'),
+          178┆    cookie: setupCookie(),
+          179┆    resave: nconf.get('sessionResave') || false,
+          180┆    saveUninitialized:
+               nconf.get('sessionSaveUninitialized') || false,
+          181┆ }));
+
+    ❯❱ javascript.express.security.audit.express-cookie-settings.express-
+       cookie-session-no-httponly
+          ❰❰ Blocking ❱❱
+          Default session middleware settings: `httpOnly` not set. It
+          ensures the cookie is sent only over HTTP(S), not client
+          JavaScript, helping to protect against cross-site scripting
+          attacks.
+          Details: https://sg.run/ydBO
+
+          174┆ app.use(session({
+          175┆    store: db.sessionStore,
+          176┆    secret: nconf.get('secret'),
+          177┆    key: nconf.get('sessionKey'),
+          178┆    cookie: setupCookie(),
+          179┆    resave: nconf.get('sessionResave') || false,
+          180┆    saveUninitialized:
+               nconf.get('sessionSaveUninitialized') || false,
+          181┆ }));
+
+    ❯❱ javascript.express.security.audit.express-cookie-settings.express-
+       cookie-session-no-path
+          ❰❰ Blocking ❱❱
+          Default session middleware settings: `path` not set. It
+          indicates the path of the cookie; use it to compare against
+          the request path. If this and domain match, then send the
+          cookie in the request.
+          Details: https://sg.run/b7pd
+
+          174┆ app.use(session({
+          175┆    store: db.sessionStore,
+          176┆    secret: nconf.get('secret'),
+          177┆    key: nconf.get('sessionKey'),
+          178┆    cookie: setupCookie(),
+          179┆    resave: nconf.get('sessionResave') || false,
+          180┆    saveUninitialized:
+               nconf.get('sessionSaveUninitialized') || false,
+          181┆ }));
+
+    ❯❱ javascript.express.security.audit.express-cookie-settings.express-
+       cookie-session-no-secure
+          ❰❰ Blocking ❱❱
+          Default session middleware settings: `secure` not set. It
+          ensures the browser only sends the cookie over HTTPS.
+          Details: https://sg.run/9oKz
+
+          174┆ app.use(session({
+          175┆    store: db.sessionStore,
+          176┆    secret: nconf.get('secret'),
+          177┆    key: nconf.get('sessionKey'),
+          178┆    cookie: setupCookie(),
+          179┆    resave: nconf.get('sessionResave') || false,
+          180┆    saveUninitialized:
+               nconf.get('sessionSaveUninitialized') || false,
+          181┆ }));
+
+    test/authentication.js
+    ❯❱ javascript.lang.security.audit.unknown-value-with-script-tag.unknown-
+       value-with-script-tag
+          ❰❰ Blocking ❱❱
+          Cannot determine what 'nconf' is and it is used with a
+          '<script>' tag. This could be susceptible to cross-site
+          scripting (XSS). Ensure 'nconf' is not externally
+          controlled, or sanitize this data.
+          Details: https://sg.run/1Zy1
+
+          273┆ const { response } = await
+               request.post(`${nconf.get('url')}/login`, {
+            ⋮┆----------------------------------------
+    ❯❱ javascript.lang.security.audit.unknown-value-with-script-tag.unknown-
+       value-with-script-tag
+          ❰❰ Blocking ❱❱
+          Cannot determine what 'jar' is and it is used with a
+          '<script>' tag. This could be susceptible to cross-site
+          scripting (XSS). Ensure 'jar' is not externally controlled,
+          or sanitize this data.
+          Details: https://sg.run/1Zy1
+
+          278┆ jar: jar,
+
+    test/build.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           29┆ destPath: path.resolve(__dirname, '../test/build',
+               path.basename(script)),
+
+    test/flags.js
+    ❯❱ javascript.lang.security.audit.unknown-value-with-script-tag.unknown-
+       value-with-script-tag
+          ❰❰ Blocking ❱❱
+          Cannot determine what 'nconf' is and it is used with a
+          '<script>' tag. This could be susceptible to cross-site
+          scripting (XSS). Ensure 'nconf' is not externally
+          controlled, or sanitize this data.
+          Details: https://sg.run/1Zy1
+
+          915┆ const { body } = await
+               request.post(`${nconf.get('url')}/api/v3/flags`, {
+            ⋮┆----------------------------------------
+          932┆ const { body } = await request.get(`${nconf.get('ur
+               l')}/api/flags?quick="<script>alert('foo');</script
+               >`, { jar });
+
+    test/groups.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+          1360┆ const filePath =
+               path.join(nconf.get('upload_path'), 'files',
+               filename);
+
+    test/i18n.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+          112┆ const translationPath = path.resolve(__dirname,
+               `../public/language/${language}`);
+            ⋮┆----------------------------------------
+          131┆ const translationPath = path.resolve(__dirname,
+               `../public/language/${language}`);
+
+    test/plugins-installed.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           14┆ const pathToTests = path.join(__dirname,
+               '../node_modules', plugin, 'test');
+
+    test/posts/uploads.js
+    ❯❱ javascript.lang.security.audit.path-traversal.path-join-resolve-
+       traversal.path-join-resolve-traversal
+          ❰❰ Blocking ❱❱
+          Detected possible user input going into a `path.join` or
+          `path.resolve` function. This could possibly lead to a path
+          traversal vulnerability,  where the attacker can access
+          arbitrary files stored in the file system. Instead, be sure
+          to sanitize or validate user input first.
+          Details: https://sg.run/OPqk
+
+           24┆ _filenames.forEach(filename => fs.closeSync(fs.open
+               Sync(path.join(nconf.get('upload_path'), 'files',
+               filename), 'w')));
+            ⋮┆----------------------------------------
+          276┆ const fullPath =
+               path.resolve(nconf.get('upload_path'), 'files',
+               filename);
+
+    test/search-admin.js
+    ❯❱ javascript.lang.security.audit.unknown-value-with-script-tag.unknown-
+       value-with-script-tag
+          ❰❰ Blocking ❱❱
+          Cannot determine what 'search' is and it is used with a
+          '<script>' tag. This could be susceptible to cross-site
+          scripting (XSS). Ensure 'search' is not externally
+          controlled, or sanitize this data.
+          Details: https://sg.run/1Zy1
+
+           49┆ search.sanitize('Pellentesque tristique senectus' +
+
+
+┌──────────────┐
+│ Scan Summary │
+└──────────────┘
+✅ Scan completed successfully.
+ • Findings: 188 (188 blocking)
+ • Rules run: 305
+ • Targets scanned: 1549
+ • Parsed lines: ~99.9%
+ • Scan skipped:
+   ◦ Files matching .semgrepignore patterns: 4197
+ • Scan was limited to files tracked by git
+ • For a detailed list of skipped files and lines, run semgrep with the --verbose flag
+Ran 305 rules on 1549 files: 188 findings.
+
+📢 Too many findings? Try Semgrep Pro for more powerful queries and less noise.
+   See https://sg.run/false-positives.
