@@ -53,6 +53,9 @@ jobs:
         uses: bahmutov/npm-install@v1
         with:
           useLockFile: false
+      
+      - name: Run Retire.js Security Scan
+        run: npm run test:retire
 
       - name: Setup on Redis
         env:
