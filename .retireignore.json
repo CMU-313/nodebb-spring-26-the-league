@@ -1,0 +1,14 @@
+[
+  {
+    "component": "lodash",
+    "justification": "Accepted risk for school project workflow setup."
+  },
+  {
+    "component": "jquery",
+    "justification": "Vulnerable version is isolated within mousetrap dependency test files."
+  },
+  {
+    "component": "svelte",
+    "justification": "SSR vulnerabilities do not affect our client-side ACP plugin build."
+  }
+]
