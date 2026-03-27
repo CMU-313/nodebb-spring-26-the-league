@@ -4,8 +4,15 @@
 
 const translatorApi = module.exports;
 
-translatorApi.translate = function (postData) {
-	return ['is_english',postData];
+/**
+ * @returns {Promise<[boolean, string]>}
+ * Second value must always be a string — Redis hashes persist fields with String(value), so objects become "[object Object]".
+ */
+translatorApi.translate = async function (postData) {
+	// Stub: real implementation would call a translation API and assign a string to translatedContent.
+	const isEnglish = false;
+	const translatedContent = 'This is a hardcoded English translation returned from the translator API.';
+	return [isEnglish, translatedContent];
 };
 
 // translatorApi.translate = async function (postData) {
