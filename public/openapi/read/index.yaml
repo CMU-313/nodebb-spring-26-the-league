@@ -79,6 +79,8 @@ get:
                                               type: string
                                             isEnglish:
                                               type: boolean
+                                            hasTranslation:
+                                              type: boolean
                                             translatedContent:
                                               type: string
                                             timestampISO:
@@ -149,6 +151,8 @@ get:
                                   content:
                                     type: string
                                   isEnglish:
+                                    type: boolean
+                                  hasTranslation:
                                     type: boolean
                                   translatedContent:
                                     type: string
