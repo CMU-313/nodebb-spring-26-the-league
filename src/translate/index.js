@@ -69,7 +69,7 @@ exports.translate = async function (postData) {
 	const jsonHeaders = { accept: 'application/json', 'content-type': 'application/json' };
 
 	try {
-		let response = await fetch(postUrl, {
+		const response = await fetch(postUrl, {
 			method: 'POST',
 			signal: controller.signal,
 			headers: jsonHeaders,
