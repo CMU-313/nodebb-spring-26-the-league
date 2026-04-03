@@ -78,11 +78,22 @@ function modifyPost(post, fields) {
 				post.uploads = [];
 			}
 		}
-		// Mark post as "English" if decided by translator service or if it has no info
-		post.isEnglish = post.isEnglish == 'true' || post.isEnglish === undefined;
-		// If translatedContent is undefined, default to empty string (no translation needed for English posts)
+		// Normalize translator flags (Redis uses strings; Mongo may return booleans)
+		post.isEnglish = normalizeIsEnglish(post.isEnglish);
 		if (post.translatedContent === undefined) {
 			post.translatedContent = '';
 		}
+		post.hasTranslation = post.isEnglish === false;
 	}
+}
+
+function normalizeIsEnglish(val) {
+	if (val === false || val === 'false' || val === 0 || val === '0') {
+		return false;
+	}
+	if (val === true || val === 'true' || val === 1 || val === '1') {
+		return true;
+	}
+	// Missing / legacy posts: treat as English (no translation UI)
+	return true;
 }

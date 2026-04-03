@@ -37,6 +37,8 @@ get:
                         type: string
                       isEnglish:
                         type: boolean
+                      hasTranslation:
+                        type: boolean
                       translatedContent:
                         type: string
                       timestamp:

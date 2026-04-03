@@ -185,6 +185,8 @@ get:
                                   type: number
                                 isEnglish:
                                   type: boolean
+                                hasTranslation:
+                                  type: boolean
                             tags:
                               type: array
                               items:

@@ -151,6 +151,8 @@ TopicObject:
               type: number
             isEnglish:
               type: boolean
+            hasTranslation:
+              type: boolean
           nullable: true
         tags:
           type: array

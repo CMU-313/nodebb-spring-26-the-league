@@ -20,6 +20,9 @@ PostObject:
       type: string
     isEnglish:
       type: boolean
+    hasTranslation:
+      type: boolean
+      description: True when the post has non-English content with a separate translation to show
     translatedContent:
       type: string
     sourceContent:
@@ -175,6 +178,8 @@ PostDataObject:
         content:
           type: string
         isEnglish:
+          type: boolean
+        hasTranslation:
           type: boolean
         translatedContent:
           type: string
