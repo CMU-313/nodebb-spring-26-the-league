@@ -88,10 +88,10 @@ function modifyPost(post, fields) {
 }
 
 function normalizeIsEnglish(val) {
-	if (val === false || val === 'false') {
+	if (val === false || val === 'false' || val === 0 || val === '0') {
 		return false;
 	}
-	if (val === true || val === 'true') {
+	if (val === true || val === 'true' || val === 1 || val === '1') {
 		return true;
 	}
 	// Missing / legacy posts: treat as English (no translation UI)

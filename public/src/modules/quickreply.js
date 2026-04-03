@@ -75,8 +75,16 @@ define('quickreply', [
 
 			ready = false;
 			element.val('');
+			alerts.alert({
+				alert_id: 'post-translating',
+				title: 'Submitting Reply',
+				message: 'Your reply is being processed. This may take a moment...',
+				type: 'info',
+			});
+
 			api.post(`/topics/${ajaxify.data.tid}`, replyData, function (err, data) {
 				ready = true;
+				alerts.remove('post-translating');
 				if (err) {
 					element.val(replyMsg);
 					return alerts.error(err);

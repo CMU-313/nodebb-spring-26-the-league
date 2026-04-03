@@ -1,7 +1,6 @@
 'use strict';
 
 const nconf = require('nconf');
-const winston = require('winston');
 const utils = require('../utils');
 
 function plainText(html) {
@@ -46,18 +45,20 @@ exports.translate = async function (postData) {
 
 	const maxChars = parseInt(nconf.get('llmTranslator:maxChars'), 10) || 12000;
 	if (raw.length > maxChars) {
-		winston.warn('[translate] Content too long for translation; skipping');
 		return [true, raw];
 	}
 
 	const normalizedBase = baseUrl.replace(/\/$/, '');
 	const baseForUrl = normalizedBase.includes('://') ? normalizedBase : `http://${normalizedBase}`;
-	let msUrl;
+
+	let postUrl;
+	let getUrl;
+
 	try {
-		msUrl = new URL('/', `${baseForUrl}/`);
-		msUrl.searchParams.set('content', raw);
+		postUrl = new URL('translate', `${baseForUrl}/`);
+		getUrl = new URL('/', `${baseForUrl}/`);
+		getUrl.searchParams.set('content', raw);
 	} catch (err) {
-		winston.error(`[translate] Invalid llmTranslator:url: ${err.message}`);
 		return [true, raw];
 	}
 
@@ -65,14 +66,17 @@ exports.translate = async function (postData) {
 	const controller = new AbortController();
 	const timer = setTimeout(() => controller.abort(), timeoutMs);
 
+	const jsonHeaders = { accept: 'application/json', 'content-type': 'application/json' };
+
 	try {
-		const response = await fetch(msUrl, {
+		let response = await fetch(postUrl, {
+			method: 'POST',
 			signal: controller.signal,
-			headers: { accept: 'application/json' },
+			headers: jsonHeaders,
+			body: JSON.stringify({ content: raw }),
 		});
 
 		if (!response.ok) {
-			winston.warn(`[translate] Upstream returned HTTP ${response.status}`);
 			return [true, raw];
 		}
 
@@ -80,7 +84,6 @@ exports.translate = async function (postData) {
 		try {
 			body = await response.json();
 		} catch (err) {
-			winston.warn('[translate] Invalid JSON from translator');
 			return [true, raw];
 		}
 
@@ -98,7 +101,6 @@ exports.translate = async function (postData) {
 
 		return [false, translatedStr];
 	} catch (err) {
-		winston.warn(`[translate] Upstream fetch failed: ${err.message}`);
 		return [true, raw];
 	} finally {
 		clearTimeout(timer);

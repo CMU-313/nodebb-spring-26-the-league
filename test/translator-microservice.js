@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Integration test against the LLM translator Flask app (GET /?content=…).
+ * Integration test against the LLM translator Flask app (POST /translate JSON body preferred; GET /?content=…).
  *
  * Skipped unless TRANSLATOR_SERVICE_TEST=1 so normal `npm test` does not call the network.
  *
@@ -84,6 +84,20 @@ const enabled = process.env.TRANSLATOR_SERVICE_TEST === '1';
 		assert.ok(Object.prototype.hasOwnProperty.call(data, 'is_english'), 'response should include is_english');
 		assert.ok(Object.prototype.hasOwnProperty.call(data, 'translated_content'), 'response should include translated_content');
 		assert.strictEqual(typeof data.translated_content, 'string');
+	});
+
+	it('accepts POST /translate with JSON body (no query length limit)', async () => {
+		const root = baseUrl.replace(/\/$/, '');
+		const u = new URL(`${root}/translate`);
+		const res = await fetch(u, {
+			method: 'POST',
+			headers: { 'content-type': 'application/json', accept: 'application/json' },
+			body: JSON.stringify({ content: 'Bonjour le monde' }),
+		});
+		assert.ok(res.ok, `expected 2xx, got ${res.status} ${res.statusText}`);
+		const data = await res.json();
+		assert.strictEqual(typeof data.translated_content, 'string');
+		assert.ok(data.translated_content.length > 0);
 	});
 
 	it('marks clear English input as English', async () => {
