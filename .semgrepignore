@@ -1,0 +1,9 @@
+# Semgrep ignore patterns (gitignore-style)
+# node_modules/ and vendor/ are ignored by semgrep by default
+node_modules/
+vendor/
+build/
+public/language/
+coverage/
+.nyc_output/
+*.min.js
