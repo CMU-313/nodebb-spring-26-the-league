@@ -1,0 +1,38 @@
+{
+  "esversion": 2021,
+  "node": true,
+  "browser": true,
+  "devel": true,
+
+  "curly": true,
+  "eqeqeq": true,
+  "undef": true,
+  "unused": true,
+  "latedef": "nofunc",
+  "freeze": true,
+  "immed": true,
+  "noarg": true,
+  "nonbsp": true,
+  "quotmark": "single",
+  "trailing": true,
+  "maxlen": 140,
+
+  "globals": {
+    "define": true,
+    "require": true,
+    "module": true,
+    "exports": true,
+    "__dirname": true,
+    "__filename": true,
+
+    "$": true,
+    "jQuery": true,
+
+    "app": true,
+    "ajaxify": true,
+    "socket": true,
+    "config": true,
+    "RELATIVE_PATH": true
+  }
+}
+
